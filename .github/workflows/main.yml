@@ -33,96 +33,55 @@ jobs:
         working-directory: soldeo-android
         run: npx cap add android
 
-      - name: Installer ImageMagick et rsvg
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y imagemagick librsvg2-bin
-
-      - name: Appliquer l'icône SOLDEO
+      - name: Créer l'icône SOLDEO
         working-directory: soldeo-android
         run: |
-          cat > soldeo-icon.svg <<'SVG'
-          <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-          <defs>
-            <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#06264B"/>
-              <stop offset="0.62" stop-color="#123D70"/>
-              <stop offset="1" stop-color="#0A1A32"/>
-            </linearGradient>
-            <linearGradient id="sun" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#FFC34D"/>
-              <stop offset="1" stop-color="#F47A20"/>
-            </linearGradient>
-            <linearGradient id="bar" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0" stop-color="#00A98F"/>
-              <stop offset="1" stop-color="#75F0B4"/>
-            </linearGradient>
-          </defs>
+          mkdir -p android/app/src/main/res/drawable
 
-          <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+          cat > android/app/src/main/res/drawable/soldeo_icon.xml <<'XML'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="512"
+              android:viewportHeight="512">
 
-          <circle cx="397" cy="158" r="58" fill="#FF9C3A" opacity=".20"/>
-          <circle cx="397" cy="158" r="36" fill="url(#sun)" opacity=".9"/>
+              <path
+                  android:fillColor="#06264B"
+                  android:pathData="M0,0 L512,0 L512,512 L0,512 Z"/>
 
-          <path d="M45 315 L115 246 L168 279 L244 170 L305 237 L355 190 L468 315"
-                fill="#0B3158"
-                stroke="#F7FBFF"
-                stroke-width="10"
-                stroke-linejoin="round"/>
+              <path
+                  android:fillColor="#123D70"
+                  android:pathData="M40,330 L120,245 L175,280 L245,170 L310,238 L360,190 L475,330 Z"/>
 
-          <path d="M45 315 L115 246 L168 279 L244 170 L305 237 L355 190 L468 315"
-                fill="none"
-                stroke="#DCEBFA"
-                stroke-width="5"
-                stroke-linejoin="round"
-                opacity=".9"/>
+              <path
+                  android:fillColor="#FFFFFF"
+                  android:pathData="M45,315 L115,246 L168,279 L244,170 L305,237 L355,190 L468,315 L460,323 L355,205 L305,250 L244,185 L168,293 L115,260 L55,323 Z"/>
 
-          <rect x="110" y="326" width="48" height="78" rx="12" fill="url(#bar)"/>
-          <rect x="174" y="294" width="48" height="110" rx="12" fill="url(#bar)"/>
-          <rect x="238" y="254" width="48" height="150" rx="12" fill="url(#bar)"/>
-          <rect x="302" y="207" width="48" height="197" rx="12" fill="url(#bar)"/>
+              <path
+                  android:fillColor="#00A98F"
+                  android:pathData="M105,325 L155,325 L155,405 L105,405 Z"/>
 
-          <path d="M82 410 Q256 394 430 410"
-                fill="none"
-                stroke="#12D9B0"
-                stroke-width="6"
-                stroke-linecap="round"/>
+              <path
+                  android:fillColor="#35CFA7"
+                  android:pathData="M170,292 L220,292 L220,405 L170,405 Z"/>
 
-          <text x="256" y="470"
-                text-anchor="middle"
-                font-family="Arial, sans-serif"
-                font-size="54"
-                font-weight="800"
-                letter-spacing="2"
-                fill="white">SOLDEO</text>
+              <path
+                  android:fillColor="#55E8B1"
+                  android:pathData="M235,250 L285,250 L285,405 L235,405 Z"/>
 
-          <circle cx="421" cy="450" r="19"
-                  fill="none"
-                  stroke="#FFB52E"
-                  stroke-width="9"/>
-          </svg>
-          SVG
+              <path
+                  android:fillColor="#75F0B4"
+                  android:pathData="M300,205 L350,205 L350,405 L300,405 Z"/>
 
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+              <path
+                  android:fillColor="#FF9C3A"
+                  android:pathData="M360,120 A38,38 0,1 0,436,120 A38,38 0,1 0,360,120"/>
 
-          rsvg-convert -w 48 -h 48 soldeo-icon.svg -o android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          rsvg-convert -w 72 -h 72 soldeo-icon.svg -o android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          rsvg-convert -w 96 -h 96 soldeo-icon.svg -o android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          rsvg-convert -w 144 -h 144 soldeo-icon.svg -o android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          rsvg-convert -w 192 -h 192 soldeo-icon.svg -o android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          </vector>
+          XML
 
-          cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-
-          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-          rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          sed -i 's#@mipmap/ic_launcher_round#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
+          sed -i 's#@mipmap/ic_launcher#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
 
       - name: Synchroniser SOLDEO
         working-directory: soldeo-android
