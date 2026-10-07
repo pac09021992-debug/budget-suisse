@@ -33,6 +33,11 @@ jobs:
         working-directory: soldeo-android
         run: npx cap add android
 
+      - name: Installer ImageMagick et rsvg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick librsvg2-bin
+
       - name: Appliquer l'icône SOLDEO
         working-directory: soldeo-android
         run: |
@@ -104,11 +109,11 @@ jobs:
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
 
-          magick soldeo-icon.svg -background none -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          magick soldeo-icon.svg -background none -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          magick soldeo-icon.svg -background none -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          magick soldeo-icon.svg -background none -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          magick soldeo-icon.svg -background none -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          rsvg-convert -w 48 -h 48 soldeo-icon.svg -o android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          rsvg-convert -w 72 -h 72 soldeo-icon.svg -o android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          rsvg-convert -w 96 -h 96 soldeo-icon.svg -o android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          rsvg-convert -w 144 -h 144 soldeo-icon.svg -o android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          rsvg-convert -w 192 -h 192 soldeo-icon.svg -o android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
           cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
           cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
