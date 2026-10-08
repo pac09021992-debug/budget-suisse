@@ -985,15 +985,11 @@ index:index
 
 });
 
-let dates=Object.keys(groups)
-.sort()
-.reverse();
+let dates=Object.keys(groups).sort().reverse();
 
-let total=0;
-
-data.expenses.forEach(function(item){
-total+=Number(item.amount||0);
-});
+let total=data.expenses.reduce(function(sum,item){
+return sum+Number(item.amount||0);
+},0);
 
 document.getElementById("historyTotal").textContent=money(total);
 
@@ -1003,7 +999,6 @@ document.getElementById("historyList").innerHTML=
 '<div class="card"><div class="empty">Aucune dépense enregistrée.</div></div>';
 
 return;
-
 }
 
 let cumul=0;
@@ -1013,9 +1008,7 @@ document.getElementById("historyList").innerHTML=
 dates.map(function(day){
 
 let dayExpenses=groups[day].reduce(function(sum,item){
-
 return sum+Number(item.amount||0);
-
 },0);
 
 cumul+=dayExpenses;
@@ -1023,53 +1016,43 @@ cumul+=dayExpenses;
 let solde=data.salary-totalFixed()-cumul;
 
 return `
-
 <div class="card">
 
 <div class="row">
-
 <strong>${formatDate(day)}</strong>
 
 <strong class="red">
 − ${money(dayExpenses)}
 </strong>
-
 </div>
 
 <div class="row" style="margin-top:12px">
-
 <span class="muted">Solde du jour</span>
 
 <strong class="${solde>=0?'green':'red'}">
 ${money(solde)}
 </strong>
-
 </div>
 
 <div class="row" style="margin-top:8px">
-
 <span class="muted">Cumul des dépenses</span>
 
 <strong class="red">
 − ${money(cumul)}
 </strong>
-
 </div>
 
 ${groups[day].map(function(item){
 
 return `
-
 <div class="item">
 
 <div>
-
 <strong>${item.label||"Dépense"}</strong>
 
 <div class="muted">
 ${item.category}
 </div>
-
 </div>
 
 <div style="text-align:right">
@@ -1090,16 +1073,14 @@ Modifier
 </div>
 
 </div>
-
 `;
 
 }).join("")}
 
 </div>
-
 `;
 
 }).join("");
 
 }
-  
+
