@@ -985,22 +985,17 @@ index:index
 
 });
 
-
-let total=data.expenses.reduce(function(sum,item){
-
-return sum+Number(item.amount||0);
-
-},0);
-
-
-document.getElementById("historyTotal")
-.textContent=money(total);
-
-
 let dates=Object.keys(groups)
 .sort()
 .reverse();
 
+let total=0;
+
+data.expenses.forEach(function(item){
+total+=Number(item.amount||0);
+});
+
+document.getElementById("historyTotal").textContent=money(total);
 
 if(!dates.length){
 
@@ -1011,17 +1006,21 @@ return;
 
 }
 
+let cumul=0;
 
 document.getElementById("historyList").innerHTML=
 
 dates.map(function(day){
 
-let dayTotal=groups[day].reduce(function(sum,item){
+let dayExpenses=groups[day].reduce(function(sum,item){
 
 return sum+Number(item.amount||0);
 
 },0);
 
+cumul+=dayExpenses;
+
+let solde=data.salary-totalFixed()-cumul;
 
 return `
 
@@ -1032,7 +1031,27 @@ return `
 <strong>${formatDate(day)}</strong>
 
 <strong class="red">
-− ${money(dayTotal)}
+− ${money(dayExpenses)}
+</strong>
+
+</div>
+
+<div class="row" style="margin-top:12px">
+
+<span class="muted">Solde du jour</span>
+
+<strong class="${solde>=0?'green':'red'}">
+${money(solde)}
+</strong>
+
+</div>
+
+<div class="row" style="margin-top:8px">
+
+<span class="muted">Cumul des dépenses</span>
+
+<strong class="red">
+− ${money(cumul)}
 </strong>
 
 </div>
@@ -1083,39 +1102,4 @@ Modifier
 }).join("");
 
 }
-
-
-function openModal(){
-
-document.getElementById("modal")
-.classList.add("show");
-
-}
-
-
-function closeModal(){
-
-document.getElementById("modal")
-.classList.remove("show");
-
-}
-
-
-document.getElementById("modal")
-.onclick=function(event){
-
-if(event.target===this){
-
-closeModal();
-
-}
-
-};
-
-
-render();
-
-</script>
-
-</body>
-</html>
+  
