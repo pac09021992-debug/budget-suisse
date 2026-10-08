@@ -743,7 +743,529 @@ function renderHome(){
   renderRecent();
 }
 
-
 function renderRecent(){
 
-  const el
+  const el=document.getElementById("recent");
+
+  if(!el) return;
+
+  const all=[
+    ...state.income.map(x=>({...x,type:"income"})),
+    ...state.expenses.map(x=>({...x,type:"expense"}))
+  ];
+
+  all.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  if(!all.length){
+    el.innerHTML='<div class="empty">Aucune activité récente</div>';
+    return;
+  }
+
+  el.innerHTML=all.slice(0,8).map(x=>{
+
+    const isIncome=x.type==="income";
+
+    return `
+      <div class="activity">
+        <div>
+          <strong>${escapeHTML(x.label || (isIncome?"Salaire":"Dépense"))}</strong>
+          <small>${dateText(x.date)}</small>
+        </div>
+        <strong class="${isIncome?"green":"red"}">
+          ${isIncome?"+":"-"}${money(x.amount)}
+        </strong>
+      </div>
+    `;
+
+  }).join("");
+}
+
+
+function renderHistory(){
+
+  const el=document.getElementById("historyList");
+
+  if(!el) return;
+
+  const groups={};
+
+  state.expenses.forEach(x=>{
+    if(!groups[x.date]) groups[x.date]=[];
+    groups[x.date].push(x);
+  });
+
+  const dates=Object.keys(groups).sort().reverse();
+
+  if(!dates.length){
+    el.innerHTML='<div class="empty">Aucune dépense enregistrée</div>';
+    return;
+  }
+
+  let cumulative=0;
+
+  el.innerHTML=dates.map(date=>{
+
+    const total=groups[date].reduce(
+      (s,x)=>s+Number(x.amount||0),0
+    );
+
+    cumulative+=total;
+
+    return `
+      <div class="historyRow" onclick="showDay('${date}')">
+        <div>
+          <strong>${dateText(date)}</strong>
+          <small>${groups[date].length} dépense${groups[date].length>1?"s":""}</small>
+        </div>
+
+        <div class="red">-${money(total)}</div>
+
+        <div>${money(cumulative)}</div>
+      </div>
+    `;
+
+  }).join("");
+}
+
+
+function showDay(date){
+
+  const items=state.expenses.filter(x=>x.date===date);
+
+  let html=`
+    <div class="modalTitle">
+      ${dateText(date)}
+    </div>
+  `;
+
+  items.forEach(x=>{
+
+    html+=`
+      <div class="detailItem">
+
+        <div>
+          <strong>${escapeHTML(x.label||"Dépense")}</strong>
+          <small>${escapeHTML(x.category||"Autre")}</small>
+        </div>
+
+        <div>
+          <strong class="red">-${money(x.amount)}</strong>
+          <button onclick="openExpense('${x.id}')">Modifier</button>
+          <button onclick="deleteExpense('${x.id}')">Supprimer</button>
+        </div>
+
+      </div>
+    `;
+
+  });
+
+  document.getElementById("modalContent").innerHTML=html;
+  document.getElementById("modal").classList.add("show");
+}
+
+
+function showPage(page){
+
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.remove("active");
+  });
+
+  const target=document.getElementById(page);
+
+  if(target){
+    target.classList.add("active");
+  }
+
+  document.querySelectorAll(".nav button").forEach(b=>{
+    b.classList.remove("active");
+  });
+
+  if(page==="home"){
+    renderHome();
+  }
+
+  if(page==="history"){
+    renderHistory();
+  }
+
+  if(page==="settings"){
+    renderRecurring();
+  }
+}
+
+
+function closeModal(){
+
+  const modal=document.getElementById("modal");
+
+  if(modal){
+    modal.classList.remove("show");
+  }
+
+  editId=null;
+}
+
+
+function openExpense(id=null){
+
+  editId=id;
+
+  const x=id
+    ? state.expenses.find(e=>e.id===id)
+    : null;
+
+  document.getElementById("modalContent").innerHTML=`
+
+    <h2>${x?"Modifier la dépense":"Ajouter une dépense"}</h2>
+
+    <input id="expenseLabel"
+      placeholder="Description"
+      value="${escapeHTML(x?.label||"")}">
+
+    <input id="expenseAmount"
+      type="number"
+      step="0.01"
+      placeholder="Montant"
+      value="${x?.amount||""}">
+
+    <select id="expenseCategory">
+
+      ${[
+        "Alimentation",
+        "Transport",
+        "Loisirs",
+        "Shopping",
+        "Restaurant",
+        "Autre"
+      ].map(c=>`
+        <option ${x?.category===c?"selected":""}>
+          ${c}
+        </option>
+      `).join("")}
+
+    </select>
+
+    <input id="expenseDate"
+      type="date"
+      value="${x?.date||today()}">
+
+    <button class="primary" onclick="saveExpense()">
+      Enregistrer
+    </button>
+
+    ${x?`
+      <button class="danger" onclick="deleteExpense('${x.id}')">
+        Supprimer
+      </button>
+    `:""}
+
+  `;
+
+  document.getElementById("modal").classList.add("show");
+}
+
+
+function saveExpense(){
+
+  const label=document.getElementById("expenseLabel").value.trim();
+
+  const amount=Number(
+    document.getElementById("expenseAmount").value
+  );
+
+  const category=document.getElementById("expenseCategory").value;
+
+  const date=document.getElementById("expenseDate").value||today();
+
+  if(!amount || amount<=0){
+    alert("Entre un montant valide.");
+    return;
+  }
+
+  if(editId){
+
+    const x=state.expenses.find(e=>e.id===editId);
+
+    if(x){
+      x.label=label;
+      x.amount=amount;
+      x.category=category;
+      x.date=date;
+    }
+
+  }else{
+
+    state.expenses.push({
+      id:Date.now().toString(),
+      label,
+      amount,
+      category,
+      date
+    });
+
+  }
+
+  save();
+  closeModal();
+  renderHome();
+  renderHistory();
+}
+
+
+function deleteExpense(id){
+
+  if(!confirm("Supprimer cette dépense ?")) return;
+
+  state.expenses=state.expenses.filter(x=>x.id!==id);
+
+  save();
+  closeModal();
+  renderHome();
+  renderHistory();
+}
+
+
+function openSalary(id=null){
+
+  editId=id;
+
+  const x=id
+    ? state.income.find(i=>i.id===id)
+    : null;
+
+  document.getElementById("modalContent").innerHTML=`
+
+    <h2>${x?"Modifier le revenu":"Nouveau salaire / revenu"}</h2>
+
+    <input id="salaryAmount"
+      type="number"
+      step="0.01"
+      placeholder="Montant"
+      value="${x?.amount||""}">
+
+    <input id="salaryDate"
+      type="date"
+      value="${x?.date||today()}">
+
+    <input id="salaryLabel"
+      placeholder="Description"
+      value="${escapeHTML(x?.label||"Salaire")}">
+
+    <button class="primary" onclick="saveSalary()">
+      Enregistrer
+    </button>
+
+  `;
+
+  document.getElementById("modal").classList.add("show");
+}
+
+
+function saveSalary(){
+
+  const amount=Number(
+    document.getElementById("salaryAmount").value
+  );
+
+  const date=
+    document.getElementById("salaryDate").value||today();
+
+  const label=
+    document.getElementById("salaryLabel").value.trim()||"Salaire";
+
+  if(!amount || amount<=0){
+    alert("Entre un montant valide.");
+    return;
+  }
+
+  if(editId){
+
+    const x=state.income.find(i=>i.id===editId);
+
+    if(x){
+      x.amount=amount;
+      x.date=date;
+      x.label=label;
+    }
+
+  }else{
+
+    state.income.push({
+      id:Date.now().toString(),
+      amount,
+      date,
+      label
+    });
+
+  }
+
+  save();
+  closeModal();
+  renderHome();
+}
+
+
+function openRecurring(){
+
+  document.getElementById("modalContent").innerHTML=`
+
+    <h2>Charges fixes mensuelles</h2>
+
+    <input id="recLabel"
+      placeholder="Ex. Loyer">
+
+    <input id="recAmount"
+      type="number"
+      step="0.01"
+      placeholder="Montant">
+
+    <button class="primary" onclick="saveRecurring()">
+      Ajouter
+    </button>
+
+    <hr>
+
+    <div id="recurringList"></div>
+
+  `;
+
+  renderRecurringModal();
+
+  document.getElementById("modal").classList.add("show");
+}
+
+
+function renderRecurring(){
+
+  const el=document.getElementById("recurringList");
+
+  if(!el) return;
+
+  renderRecurringModal();
+}
+
+
+function renderRecurringModal(){
+
+  const el=document.getElementById("recurringList");
+
+  if(!el) return;
+
+  if(!state.recurring.length){
+
+    el.innerHTML=
+      '<div class="empty">Aucune charge fixe enregistrée</div>';
+
+    return;
+  }
+
+  el.innerHTML=state.recurring.map(x=>`
+
+    <div class="activity">
+
+      <div>
+        <strong>${escapeHTML(x.label)}</strong>
+      </div>
+
+      <div>
+        <strong>${money(x.amount)}</strong>
+        <button onclick="deleteRecurring('${x.id}')">
+          Supprimer
+        </button>
+      </div>
+
+    </div>
+
+  `).join("");
+}
+
+
+function saveRecurring(){
+
+  const label=document.getElementById("recLabel").value.trim();
+
+  const amount=Number(
+    document.getElementById("recAmount").value
+  );
+
+  if(!label || !amount || amount<=0){
+    alert("Entre un nom et un montant valide.");
+    return;
+  }
+
+  state.recurring.push({
+    id:Date.now().toString(),
+    label,
+    amount
+  });
+
+  save();
+
+  document.getElementById("recLabel").value="";
+  document.getElementById("recAmount").value="";
+
+  renderRecurringModal();
+  renderHome();
+}
+
+
+function deleteRecurring(id){
+
+  if(!confirm("Supprimer cette charge fixe ?")) return;
+
+  state.recurring=
+    state.recurring.filter(x=>x.id!==id);
+
+  save();
+
+  renderRecurringModal();
+  renderHome();
+}
+
+
+function openSettings(){
+
+  document.getElementById("modalContent").innerHTML=`
+
+    <h2>Réglages</h2>
+
+    <label>Prochain salaire</label>
+
+    <input id="nextSalaryInput"
+      type="date"
+      value="${state.nextSalary||""}">
+
+    <button class="primary" onclick="saveSettings()">
+      Enregistrer
+    </button>
+
+    <hr>
+
+    <button onclick="openRecurring()">
+      Charges fixes mensuelles
+    </button>
+
+  `;
+
+  document.getElementById("modal").classList.add("show");
+}
+
+
+function saveSettings(){
+
+  state.nextSalary=
+    document.getElementById("nextSalaryInput").value;
+
+  save();
+  closeModal();
+  renderHome();
+}
+
+
+function init(){
+
+  renderHome();
+  renderHistory();
+}
+
+init();
