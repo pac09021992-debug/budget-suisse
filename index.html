@@ -1,526 +1,528 @@
-function renderRecent(){
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOLDEO</title>
 
-  const el=document.getElementById("recent");
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f3f6fc;
+color:#172033;
+padding-bottom:90px
+}
+.app{max-width:430px;margin:auto;padding:18px}
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px
+}
+.logo{font-size:25px;font-weight:900;color:#123d70}
+.month{font-size:12px;color:#777}
 
-  if(!el) return;
-
-  const all=[
-    ...state.income.map(x=>({...x,type:"income"})),
-    ...state.expenses.map(x=>({...x,type:"expense"}))
-  ];
-
-  all.sort((a,b)=>new Date(b.date)-new Date(a.date));
-
-  if(!all.length){
-    el.innerHTML='<div class="empty">Aucune activité récente</div>';
-    return;
-  }
-
-  el.innerHTML=all.slice(0,8).map(x=>{
-
-    const isIncome=x.type==="income";
-
-    return `
-      <div class="activity">
-        <div>
-          <strong>${escapeHTML(x.label || (isIncome?"Salaire":"Dépense"))}</strong>
-          <small>${dateText(x.date)}</small>
-        </div>
-        <strong class="${isIncome?"green":"red"}">
-          ${isIncome?"+":"-"}${money(x.amount)}
-        </strong>
-      </div>
-    `;
-
-  }).join("");
+.hero{
+background:linear-gradient(135deg,#536dfe,#7856e8);
+color:white;
+padding:23px;
+border-radius:25px;
+margin-bottom:12px
+}
+.label{font-size:13px;opacity:.8}
+.balance{font-size:38px;font-weight:900;margin:7px 0 16px}
+.hero-info{
+display:flex;
+justify-content:space-between;
+font-size:12px
 }
 
+.card{
+background:white;
+border-radius:20px;
+padding:17px;
+margin:12px 0;
+box-shadow:0 4px 18px #0000000b
+}
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px
+}
+.title{font-weight:800}
+.muted{font-size:12px;color:#7b8290}
+.big{font-size:25px;font-weight:900}
 
-function renderHistory(){
-
-  const el=document.getElementById("historyList");
-
-  if(!el) return;
-
-  const groups={};
-
-  state.expenses.forEach(x=>{
-    if(!groups[x.date]) groups[x.date]=[];
-    groups[x.date].push(x);
-  });
-
-  const dates=Object.keys(groups).sort().reverse();
-
-  if(!dates.length){
-    el.innerHTML='<div class="empty">Aucune dépense enregistrée</div>';
-    return;
-  }
-
-  let cumulative=0;
-
-  el.innerHTML=dates.map(date=>{
-
-    const total=groups[date].reduce(
-      (s,x)=>s+Number(x.amount||0),0
-    );
-
-    cumulative+=total;
-
-    return `
-      <div class="historyRow" onclick="showDay('${date}')">
-        <div>
-          <strong>${dateText(date)}</strong>
-          <small>${groups[date].length} dépense${groups[date].length>1?"s":""}</small>
-        </div>
-
-        <div class="red">-${money(total)}</div>
-
-        <div>${money(cumulative)}</div>
-      </div>
-    `;
-
-  }).join("");
+.progress{
+height:10px;
+background:#edf0f5;
+border-radius:20px;
+overflow:hidden;
+margin-top:12px
+}
+.bar{
+height:100%;
+background:linear-gradient(90deg,#20b26b,#f5a623,#ef5b67);
+width:0
 }
 
+.actions{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin:14px 0
+}
+button{
+border:0;
+border-radius:15px;
+padding:13px;
+font-weight:800;
+cursor:pointer
+}
+.primary{
+background:linear-gradient(135deg,#536dfe,#7856e8);
+color:white
+}
+.secondary{
+background:white;
+border:1px solid #e1e6ef;
+color:#27324a
+}
+.green{color:#20a866}
+.red{color:#e65360}
 
-function showDay(date){
-
-  const items=state.expenses.filter(x=>x.date===date);
-
-  let html=`
-    <div class="modalTitle">
-      ${dateText(date)}
-    </div>
-  `;
-
-  items.forEach(x=>{
-
-    html+=`
-      <div class="detailItem">
-
-        <div>
-          <strong>${escapeHTML(x.label||"Dépense")}</strong>
-          <small>${escapeHTML(x.category||"Autre")}</small>
-        </div>
-
-        <div>
-          <strong class="red">-${money(x.amount)}</strong>
-          <button onclick="openExpense('${x.id}')">Modifier</button>
-          <button onclick="deleteExpense('${x.id}')">Supprimer</button>
-        </div>
-
-      </div>
-    `;
-
-  });
-
-  document.getElementById("modalContent").innerHTML=html;
-  document.getElementById("modal").classList.add("show");
+.section{
+font-weight:900;
+margin:20px 3px 9px
 }
 
+.item{
+padding:12px 0;
+border-bottom:1px solid #edf0f4;
+display:flex;
+justify-content:space-between;
+gap:10px
+}
+.item:last-child{border-bottom:0}
 
-function showPage(page){
-
-  document.querySelectorAll(".page").forEach(p=>{
-    p.classList.remove("active");
-  });
-
-  const target=document.getElementById(page);
-
-  if(target){
-    target.classList.add("active");
-  }
-
-  document.querySelectorAll(".nav button").forEach(b=>{
-    b.classList.remove("active");
-  });
-
-  if(page==="home"){
-    renderHome();
-  }
-
-  if(page==="history"){
-    renderHistory();
-  }
-
-  if(page==="settings"){
-    renderRecurring();
-  }
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+border-top:1px solid #ddd;
+z-index:10
+}
+.nav-inner{
+max-width:430px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(4,1fr)
+}
+.nav button{
+background:white;
+border-radius:0;
+padding:9px 2px;
+font-size:11px;
+color:#777
+}
+.nav button.active{
+color:#536dfe;
+font-weight:900
+}
+.nav-icon{
+font-size:20px;
+display:block
 }
 
+.page{display:none}
+.page.active{display:block}
 
-function closeModal(){
+.modal{
+position:fixed;
+inset:0;
+background:#0008;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:20;
+padding:20px
+}
+.modal.show{display:flex}
+.modal-box{
+background:white;
+border-radius:22px;
+padding:20px;
+width:100%;
+max-width:390px;
+max-height:90vh;
+overflow:auto
+}
+input,select{
+width:100%;
+padding:13px;
+border:1px solid #dce2eb;
+border-radius:12px;
+font-size:16px;
+margin:6px 0 12px
+}
+.modal-actions{
+display:flex;
+gap:8px
+}
+.modal-actions button{flex:1}
 
-  const modal=document.getElementById("modal");
+.history-day{
+background:white;
+border-radius:18px;
+margin-bottom:10px;
+overflow:hidden
+}
+.history-head{
+padding:13px;
+background:#f7f9fc;
+display:flex;
+justify-content:space-between
+}
+.history-body{padding:0 13px}
 
-  if(modal){
-    modal.classList.remove("show");
-  }
-
-  editId=null;
+.small{
+font-size:11px;
+padding:7px 9px;
+border-radius:9px
 }
 
+.empty{
+text-align:center;
+color:#858c98;
+padding:20px
+}
+</style>
+</head>
 
-function openExpense(id=null){
+<body>
 
-  editId=id;
+<div class="app">
 
-  const x=id
-    ? state.expenses.find(e=>e.id===id)
-    : null;
+<header>
+<div class="logo">SOLDEO</div>
+<div class="month" id="month"></div>
+</header>
 
-  document.getElementById("modalContent").innerHTML=`
+<!-- ACCUEIL -->
+<div id="home" class="page active">
 
-    <h2>${x?"Modifier la dépense":"Ajouter une dépense"}</h2>
+<div class="hero">
+<div class="label">Reste à vivre jusqu'au prochain salaire</div>
+<div class="balance" id="remaining">0.00 CHF</div>
 
-    <input id="expenseLabel"
-      placeholder="Description"
-      value="${escapeHTML(x?.label||"")}">
+<div class="hero-info">
+<span id="salaryInfo">Aucun prochain salaire</span>
+<span id="days">— jours</span>
+</div>
+</div>
 
-    <input id="expenseAmount"
-      type="number"
-      step="0.01"
-      placeholder="Montant"
-      value="${x?.amount||""}">
+<div class="card">
+<div class="row">
+<div>
+<div class="title">Aujourd'hui</div>
+<div class="muted">Ce que tu peux encore dépenser aujourd'hui</div>
+</div>
 
-    <select id="expenseCategory">
+<div class="big" id="daily">0.00 CHF</div>
+</div>
 
-      ${[
-        "Alimentation",
-        "Transport",
-        "Loisirs",
-        "Shopping",
-        "Restaurant",
-        "Autre"
-      ].map(c=>`
-        <option ${x?.category===c?"selected":""}>
-          ${c}
-        </option>
-      `).join("")}
+<div class="muted" id="todaySpent"></div>
+</div>
 
-    </select>
+<div class="card">
+<div class="row">
+<div>
+<div class="title">Budget utilisé</div>
+<div class="muted" id="spentLabel">Aucune dépense</div>
+</div>
 
-    <input id="expenseDate"
-      type="date"
-      value="${x?.date||today()}">
+<div class="big" id="percent">0%</div>
+</div>
 
-    <button class="primary" onclick="saveExpense()">
-      Enregistrer
-    </button>
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+</div>
 
-    ${x?`
-      <button class="danger" onclick="deleteExpense('${x.id}')">
-        Supprimer
-      </button>
-    `:""}
+<div class="actions">
 
-  `;
+<button class="primary" onclick="addExpense()">
+＋ Dépense
+</button>
 
-  document.getElementById("modal").classList.add("show");
+<button class="secondary" onclick="addSalary()">
+＋ Salaire
+</button>
+
+<button class="secondary" onclick="settings()">
+⚙ Réglages
+</button>
+
+<button class="secondary" onclick="showPage('history')">
+↕ Historique
+</button>
+
+</div>
+
+<div class="section">Ce mois</div>
+
+<div class="card">
+
+<div class="row">
+<span class="green">● Revenus</span>
+<strong id="income">0.00 CHF</strong>
+</div>
+
+<div class="row" style="margin-top:12px">
+<span class="red">● Dépenses</span>
+<strong id="expenses">0.00 CHF</strong>
+</div>
+
+<div class="row" style="margin-top:12px">
+<span class="muted">Charges fixes enregistrées</span>
+<strong id="fixed">0.00 CHF</strong>
+</div>
+
+</div>
+
+<div class="section">Activité récente</div>
+
+<div class="card" id="recent">
+<div class="empty">
+Aucune opération pour le moment.
+</div>
+</div>
+
+</div>
+
+
+<!-- HISTORIQUE -->
+<div id="history" class="page">
+
+<div class="row">
+<h2>Historique</h2>
+<button class="secondary small" onclick="showPage('home')">
+Accueil
+</button>
+</div>
+
+<div class="card">
+<div class="muted">Total des dépenses</div>
+<div class="big" id="historyTotal">0.00 CHF</div>
+</div>
+
+<div id="historyList"></div>
+
+</div>
+
+</div>
+
+
+<!-- NAVIGATION -->
+<div class="nav">
+
+<div class="nav-inner">
+
+<button class="active" onclick="showPage('home')">
+<span class="nav-icon">⌂</span>
+Accueil
+</button>
+
+<button onclick="showPage('history')">
+<span class="nav-icon">↕</span>
+Historique
+</button>
+
+<button onclick="addExpense()">
+<span class="nav-icon">＋</span>
+Dépense
+</button>
+
+<button onclick="settings()">
+<span class="nav-icon">⚙</span>
+Réglages
+</button>
+
+</div>
+
+</div>
+
+
+<!-- MODALE -->
+<div class="modal" id="modal">
+
+<div class="modal-box" id="modalBox"></div>
+
+</div>
+
+
+<script>
+
+const KEY="SOLDEO_DATA";
+
+let data=JSON.parse(localStorage.getItem(KEY)||"null")||{
+salary:0,
+salaryDate:"",
+nextSalary:"",
+expenses:[],
+fixed:[]
+};
+
+function save(){
+localStorage.setItem(KEY,JSON.stringify(data));
 }
 
-
-function saveExpense(){
-
-  const label=document.getElementById("expenseLabel").value.trim();
-
-  const amount=Number(
-    document.getElementById("expenseAmount").value
-  );
-
-  const category=document.getElementById("expenseCategory").value;
-
-  const date=document.getElementById("expenseDate").value||today();
-
-  if(!amount || amount<=0){
-    alert("Entre un montant valide.");
-    return;
-  }
-
-  if(editId){
-
-    const x=state.expenses.find(e=>e.id===editId);
-
-    if(x){
-      x.label=label;
-      x.amount=amount;
-      x.category=category;
-      x.date=date;
-    }
-
-  }else{
-
-    state.expenses.push({
-      id:Date.now().toString(),
-      label,
-      amount,
-      category,
-      date
-    });
-
-  }
-
-  save();
-  closeModal();
-  renderHome();
-  renderHistory();
+function money(n){
+return Number(n||0).toLocaleString("fr-CH",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+})+" CHF";
 }
 
-
-function deleteExpense(id){
-
-  if(!confirm("Supprimer cette dépense ?")) return;
-
-  state.expenses=state.expenses.filter(x=>x.id!==id);
-
-  save();
-  closeModal();
-  renderHome();
-  renderHistory();
+function today(){
+return new Date().toISOString().slice(0,10);
 }
 
-
-function openSalary(id=null){
-
-  editId=id;
-
-  const x=id
-    ? state.income.find(i=>i.id===id)
-    : null;
-
-  document.getElementById("modalContent").innerHTML=`
-
-    <h2>${x?"Modifier le revenu":"Nouveau salaire / revenu"}</h2>
-
-    <input id="salaryAmount"
-      type="number"
-      step="0.01"
-      placeholder="Montant"
-      value="${x?.amount||""}">
-
-    <input id="salaryDate"
-      type="date"
-      value="${x?.date||today()}">
-
-    <input id="salaryLabel"
-      placeholder="Description"
-      value="${escapeHTML(x?.label||"Salaire")}">
-
-    <button class="primary" onclick="saveSalary()">
-      Enregistrer
-    </button>
-
-  `;
-
-  document.getElementById("modal").classList.add("show");
+function formatDate(d){
+if(!d)return"";
+return new Date(d+"T00:00:00").toLocaleDateString(
+"fr-CH",
+{day:"2-digit",month:"2-digit",year:"numeric"}
+);
 }
 
+function daysLeft(){
 
-function saveSalary(){
+if(!data.nextSalary)return 0;
 
-  const amount=Number(
-    document.getElementById("salaryAmount").value
-  );
+let a=new Date();
+let b=new Date(data.nextSalary+"T00:00:00");
 
-  const date=
-    document.getElementById("salaryDate").value||today();
+a.setHours(0,0,0,0);
 
-  const label=
-    document.getElementById("salaryLabel").value.trim()||"Salaire";
+return Math.max(
+0,
+Math.ceil((b-a)/86400000)
+);
 
-  if(!amount || amount<=0){
-    alert("Entre un montant valide.");
-    return;
-  }
-
-  if(editId){
-
-    const x=state.income.find(i=>i.id===editId);
-
-    if(x){
-      x.amount=amount;
-      x.date=date;
-      x.label=label;
-    }
-
-  }else{
-
-    state.income.push({
-      id:Date.now().toString(),
-      amount,
-      date,
-      label
-    });
-
-  }
-
-  save();
-  closeModal();
-  renderHome();
 }
 
+function fixedTotal(){
 
-function openRecurring(){
+return data.fixed.reduce(
+(s,x)=>s+Number(x.amount||0),0
+);
 
-  document.getElementById("modalContent").innerHTML=`
-
-    <h2>Charges fixes mensuelles</h2>
-
-    <input id="recLabel"
-      placeholder="Ex. Loyer">
-
-    <input id="recAmount"
-      type="number"
-      step="0.01"
-      placeholder="Montant">
-
-    <button class="primary" onclick="saveRecurring()">
-      Ajouter
-    </button>
-
-    <hr>
-
-    <div id="recurringList"></div>
-
-  `;
-
-  renderRecurringModal();
-
-  document.getElementById("modal").classList.add("show");
 }
 
+function expenseTotal(){
 
-function renderRecurring(){
+return data.expenses.reduce(
+(s,x)=>s+Number(x.amount||0),0
+);
 
-  const el=document.getElementById("recurringList");
-
-  if(!el) return;
-
-  renderRecurringModal();
 }
 
+function todayExpenses(){
 
-function renderRecurringModal(){
+return data.expenses
+.filter(x=>x.date===today())
+.reduce(
+(s,x)=>s+Number(x.amount||0),
+0
+);
 
-  const el=document.getElementById("recurringList");
-
-  if(!el) return;
-
-  if(!state.recurring.length){
-
-    el.innerHTML=
-      '<div class="empty">Aucune charge fixe enregistrée</div>';
-
-    return;
-  }
-
-  el.innerHTML=state.recurring.map(x=>`
-
-    <div class="activity">
-
-      <div>
-        <strong>${escapeHTML(x.label)}</strong>
-      </div>
-
-      <div>
-        <strong>${money(x.amount)}</strong>
-        <button onclick="deleteRecurring('${x.id}')">
-          Supprimer
-        </button>
-      </div>
-
-    </div>
-
-  `).join("");
 }
 
+function remaining(){
 
-function saveRecurring(){
+return data.salary-
+fixedTotal()-
+expenseTotal();
 
-  const label=document.getElementById("recLabel").value.trim();
-
-  const amount=Number(
-    document.getElementById("recAmount").value
-  );
-
-  if(!label || !amount || amount<=0){
-    alert("Entre un nom et un montant valide.");
-    return;
-  }
-
-  state.recurring.push({
-    id:Date.now().toString(),
-    label,
-    amount
-  });
-
-  save();
-
-  document.getElementById("recLabel").value="";
-  document.getElementById("recAmount").value="";
-
-  renderRecurringModal();
-  renderHome();
 }
 
+/*
+Le budget quotidien est calculé AVANT
+les dépenses du jour, puis les dépenses
+du jour sont retirées.
 
-function deleteRecurring(id){
+Exemple :
+80 CHF disponibles aujourd'hui
+-15 CHF dépensés
+=65 CHF affichés.
+*/
 
-  if(!confirm("Supprimer cette charge fixe ?")) return;
+function dailyBudget(){
 
-  state.recurring=
-    state.recurring.filter(x=>x.id!==id);
+let days=daysLeft();
 
-  save();
+if(days<=0)return 0;
 
-  renderRecurringModal();
-  renderHome();
+let spent=todayExpenses();
+
+let beforeToday=remaining()+spent;
+
+return Math.max(
+0,
+(beforeToday/days)-spent
+);
+
 }
 
+function render(){
 
-function openSettings(){
+document.getElementById("month").textContent=
+new Date().toLocaleDateString(
+"fr-CH",
+{month:"long",year:"numeric"}
+);
 
-  document.getElementById("modalContent").innerHTML=`
+document.getElementById("remaining").textContent=
+money(remaining());
 
-    <h2>Réglages</h2>
+document.getElementById("income").textContent=
+money(data.salary);
 
-    <label>Prochain salaire</label>
+document.getElementById("expenses").textContent=
+money(expenseTotal());
 
-    <input id="nextSalaryInput"
-      type="date"
-      value="${state.nextSalary||""}">
+document.getElementById("fixed").textContent=
+money(fixedTotal());
 
-    <button class="primary" onclick="saveSettings()">
-      Enregistrer
-    </button>
+document.getElementById("daily").textContent=
+money(dailyBudget());
 
-    <hr>
+let todaySpent=todayExpenses();
 
-    <button onclick="openRecurring()">
-      Charges fixes mensuelles
-    </button>
+document.getElementById("todaySpent").textContent=
+todaySpent
+?money(todaySpent)+" déjà dépensés aujourd'hui"
+:"Aucune dépense aujourd'hui";
 
-  `;
+let base=Math.max(
+0,
+data.salary-fixedTotal()
+);
 
-  document.getElementById("modal").classList.add("show");
-}
+let pct=base
+?Math.min(100,(expenseTotal()/base)*100)
+:0;
 
+document.getElementById("percent").textContent=
+pct.toFixed(0)+"%";
 
-function saveSettings(){
+document.getElementById("bar").style.width=
+pct+"%";
 
-  state.nextSalary=
-    document.getElementById("nextSalaryInput").value;
-
-  save();
-  closeModal();
-  renderHome();
-}
-
-
-function init(){
-
-  renderHome();
-  renderHistory();
-}
-
-init();
+document.getElementById("
