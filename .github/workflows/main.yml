@@ -47,47 +47,21 @@ jobs:
         working-directory: soldeo-android
         run: |
           mkdir -p android/app/src/main/res/drawable
-
-          cat > android/app/src/main/res/drawable/soldeo_icon.xml <<'XML'
-          <vector xmlns:android="http://schemas.android.com/apk/res/android"
-              android:width="108dp"
-              android:height="108dp"
-              android:viewportWidth="512"
-              android:viewportHeight="512">
-
-              <path
-                  android:fillColor="#06264B"
-                  android:pathData="M0,0 L512,0 L512,512 L0,512 Z"/>
-
-              <path
-                  android:fillColor="#123D70"
-                  android:pathData="M40,330 L120,245 L175,280 L245,170 L310,238 L360,190 L475,330 Z"/>
-
-              <path
-                  android:fillColor="#FFFFFF"
-                  android:pathData="M45,315 L115,246 L168,279 L244,170 L305,237 L355,190 L468,315 L460,323 L355,205 L305,250 L244,185 L168,293 L115,260 L55,323 Z"/>
-
-              <path
-                  android:fillColor="#00A98F"
-                  android:pathData="M105,325 L155,325 L155,405 L105,405 Z"/>
-
-              <path
-                  android:fillColor="#35CFA7"
-                  android:pathData="M170,292 L220,292 L220,405 L170,405 Z"/>
-
-              <path
-                  android:fillColor="#55E8B1"
-                  android:pathData="M235,250 L285,250 L285,405 L235,405 Z"/>
-
-              <path
-                  android:fillColor="#75F0B4"
-                  android:pathData="M300,205 L350,205 L350,405 L300,405 Z"/>
-
-              <path
-                  android:fillColor="#FF9C3A"
-                  android:pathData="M360,120 A38,38 0,1 0,436,120 A38,38 0,1 0,360,120"/>
-          </vector>
-          XML
+          printf '%s\n' '<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="512" android:viewportHeight="512"><path android:fillColor="#06264B" android:pathData="M0,0 L512,0 L512,512 L0,512 Z"/><path android:fillColor="#123D70" android:pathData="M40,330 L120,245 L175,280 L245,170 L310,238 L360,190 L475,330 Z"/><path android:fillColor="#FFFFFF" android:pathData="M45,315 L115,246 L168,279 L244,170 L305,237 L355,190 L468,315 L460,323 L355,205 L305,250 L244,185 L168,293 L115,260 L55,323 Z"/><path android:fillColor="#00A98F" android:pathData="M105,325 L155,325 L155,405 L105,405 Z"/><path android:fillColor="#35CFA7" android:pathData="M170,292 L220,292 L220,405 L170,405 Z"/><path android:fillColor="#55E8B1" android:pathData="M235,250 L285,250 L285,405 L235,405 Z"/><path android:fillColor="#75F0B4" android:pathData="M300,205 L350,205 L350,405 L300,405 Z"/><path android:fillColor="#FF9C3A" android:pathData="M360,120 A38,38 0,1 0,436,120 A38,38 0,1 0,360,120"/></vector>' > android/app/src/main/res/drawable/soldeo_icon.xml
 
           sed -i 's#@mipmap/ic_launcher_round#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
-          sed -i 's#@
+          sed -i 's#@mipmap/ic_launcher#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
+
+      - name: Synchroniser SOLDEO
+        working-directory: soldeo-android
+        run: npx cap sync android
+
+      - name: Construire l'APK
+        working-directory: soldeo-android/android
+        run: ./gradlew assembleDebug
+
+      - name: Publier l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SOLDEO-APK
+          path: soldeo-android/android/app/build/outputs/apk/debug/app-debug.apk
