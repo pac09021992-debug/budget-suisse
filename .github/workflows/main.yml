@@ -50,7 +50,7 @@ jobs:
       - name: Installer le vrai logo Catogne
         working-directory: soldeo-android
         run: |
-              sudo apt-get update && sudo apt-get install -y imagemagick
+          sudo apt-get update && sudo apt-get install -y imagemagick
           mkdir -p android/app/src/main/res/mipmap-mdpi
           mkdir -p android/app/src/main/res/mipmap-hdpi
           mkdir -p android/app/src/main/res/mipmap-xhdpi
