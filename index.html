@@ -1,164 +1,524 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
 <title>SOLDEO</title>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f3f6fc;font-family:Arial,sans-serif;color:#182033;padding-bottom:80px}
-.app{max-width:430px;margin:auto;padding:16px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.logo{font-size:26px;font-weight:900;color:#123d70}
-.muted{color:#7b8290;font-size:12px}
-.hero{background:linear-gradient(135deg,#536dfe,#7856e8);color:white;padding:22px;border-radius:24px;margin-bottom:12px}
-.hero small{opacity:.8}
-.balance{font-size:38px;font-weight:900;margin:7px 0 15px}
-.info{display:flex;justify-content:space-between;font-size:12px}
-.card{background:white;border-radius:19px;padding:16px;margin:12px 0;box-shadow:0 4px 18px #0000000b}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.big{font-size:24px;font-weight:900}
-.green{color:#20ad68}
-.red{color:#e95360}
-.progress{height:9px;background:#edf0f5;border-radius:9px;margin-top:12px}
-.bar{height:100%;border-radius:9px;background:linear-gradient(90deg,#20ad68,#f5a623,#e95360)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
-button{border:0;border-radius:14px;padding:13px;font-weight:800;font-size:14px;cursor:pointer}
-.primary{background:linear-gradient(135deg,#536dfe,#7856e8);color:white}
-.secondary{background:white;border:1px solid #dfe4ed;color:#27324a}
-.section{font-weight:900;margin:20px 2px 8px}
-.item{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #edf0f4}
-.item:last-child{border:0}
-.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;z-index:10}
-.navin{max-width:430px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr)}
-.nav button{background:white;border-radius:0;color:#777;font-size:11px}
-.nav b{display:block;font-size:20px}
-.page{display:none}
-.page.active{display:block}
-.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:center;justify-content:center;padding:18px}
-.modal.show{display:flex}
-.box{background:white;border-radius:22px;padding:20px;width:100%;max-width:390px;max-height:90vh;overflow:auto}
-input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;border-radius:11px;font-size:16px}
-.modalBtns{display:flex;gap:8px}
-.modalBtns button{flex:1}
-.empty{text-align:center;color:#888;padding:20px}
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+background:#f3f6fc;
+font-family:Arial,sans-serif;
+color:#182033;
+padding-bottom:80px;
+}
+
+.app{
+max-width:430px;
+margin:auto;
+padding:16px;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:16px;
+}
+
+.logo{
+font-size:26px;
+font-weight:900;
+color:#123d70;
+}
+
+.muted{
+color:#7b8290;
+font-size:12px;
+}
+
+.hero{
+background:linear-gradient(135deg,#536dfe,#7856e8);
+color:white;
+padding:22px;
+border-radius:24px;
+margin-bottom:12px;
+}
+
+.hero small{
+opacity:.8;
+}
+
+.balance{
+font-size:38px;
+font-weight:900;
+margin:7px 0 15px;
+}
+
+.info{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+}
+
+.card{
+background:white;
+border-radius:19px;
+padding:16px;
+margin:12px 0;
+box-shadow:0 4px 18px #0000000b;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+}
+
+.big{
+font-size:24px;
+font-weight:900;
+}
+
+.green{
+color:#20ad68;
+}
+
+.red{
+color:#e95360;
+}
+
+.progress{
+height:9px;
+background:#edf0f5;
+border-radius:9px;
+margin-top:12px;
+overflow:hidden;
+}
+
+.bar{
+height:100%;
+border-radius:9px;
+background:linear-gradient(
+90deg,
+#20ad68,
+#f5a623,
+#e95360
+);
+}
+
+.actions{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:9px;
+margin:14px 0;
+}
+
+button{
+border:0;
+border-radius:14px;
+padding:13px;
+font-weight:800;
+font-size:14px;
+cursor:pointer;
+}
+
+.primary{
+background:linear-gradient(
+135deg,
+#536dfe,
+#7856e8
+);
+color:white;
+}
+
+.secondary{
+background:white;
+border:1px solid #dfe4ed;
+color:#27324a;
+}
+
+.section{
+font-weight:900;
+margin:20px 2px 8px;
+}
+
+.item{
+display:flex;
+justify-content:space-between;
+padding:11px 0;
+border-bottom:1px solid #edf0f4;
+gap:10px;
+}
+
+.item:last-child{
+border:0;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+border-top:1px solid #ddd;
+z-index:10;
+}
+
+.navin{
+max-width:430px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+}
+
+.nav button{
+background:white;
+border-radius:0;
+color:#777;
+font-size:11px;
+}
+
+.nav b{
+display:block;
+font-size:20px;
+}
+
+.page{
+display:none;
+}
+
+.page.active{
+display:block;
+}
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:#0008;
+z-index:20;
+align-items:center;
+justify-content:center;
+padding:18px;
+}
+
+.modal.show{
+display:flex;
+}
+
+.box{
+background:white;
+border-radius:22px;
+padding:20px;
+width:100%;
+max-width:390px;
+max-height:90vh;
+overflow:auto;
+}
+
+input,
+select{
+width:100%;
+padding:12px;
+margin:6px 0 12px;
+border:1px solid #dce2eb;
+border-radius:11px;
+font-size:16px;
+}
+
+.modalBtns{
+display:flex;
+gap:8px;
+}
+
+.modalBtns button{
+flex:1;
+}
+
+.empty{
+text-align:center;
+color:#888;
+padding:20px;
+}
+
 </style>
+
 </head>
 
 <body>
 
+
 <div class="app">
 
+
 <header>
-<div class="logo">SOLDEO</div>
+
+<div class="logo">
+SOLDEO
+</div>
+
 <div class="muted" id="month"></div>
+
 </header>
 
+
 <!-- ACCUEIL -->
+
 <div id="home" class="page active">
 
+
 <div class="hero">
-<small>Reste à vivre jusqu'au prochain salaire</small>
-<div class="balance" id="remaining">0.00 CHF</div>
+
+<small>
+Reste à vivre jusqu'au prochain salaire
+</small>
+
+<div class="balance" id="remaining">
+0.00 CHF
+</div>
 
 <div class="info">
-<span id="salaryInfo">Aucun salaire</span>
-<span id="daysInfo">— jours</span>
+
+<span id="salaryInfo">
+Aucun salaire
+</span>
+
+<span id="daysInfo">
+— jours
+</span>
+
 </div>
+
 </div>
+
+
+<!-- BUDGET DU JOUR -->
 
 <div class="card">
 
 <div class="row">
+
 <div>
-<strong>Aujourd'hui</strong>
-<div class="muted">Ce que tu peux encore dépenser</div>
+
+<strong>
+Aujourd'hui
+</strong>
+
+<div class="muted">
+Ce que tu peux encore dépenser
 </div>
 
-<div class="big" id="daily">0.00 CHF</div>
 </div>
 
-<div class="muted" id="todaySpent"></div>
+<div class="big" id="daily">
+0.00 CHF
+</div>
 
 </div>
+
+<div class="muted" id="todaySpent">
+Aucune dépense aujourd'hui
+</div>
+
+</div>
+
+
+<!-- POURCENTAGE -->
 
 <div class="card">
 
 <div class="row">
+
 <div>
-<strong>Budget utilisé</strong>
-<div class="muted" id="spentText">Aucune dépense</div>
+
+<strong>
+Budget utilisé
+</strong>
+
+<div class="muted" id="spentText">
+Aucune dépense
 </div>
 
-<div class="big" id="percent">0%</div>
+</div>
+
+<div class="big" id="percent">
+0%
+</div>
+
 </div>
 
 <div class="progress">
-<div class="bar" id="bar" style="width:0%"></div>
+
+<div
+class="bar"
+id="bar"
+style="width:0%">
 </div>
 
 </div>
+
+</div>
+
+
+<!-- ACTIONS -->
 
 <div class="actions">
 
-<button class="primary" onclick="openExpense()">＋ Dépense</button>
+<button
+class="primary"
+onclick="openExpense()">
+＋ Dépense
+</button>
 
-<button class="secondary" onclick="openSalary()">＋ Salaire</button>
+<button
+class="secondary"
+onclick="openSalary()">
+＋ Salaire
+</button>
 
-<button class="secondary" onclick="openSettings()">⚙ Réglages</button>
+<button
+class="secondary"
+onclick="openSettings()">
+⚙ Réglages
+</button>
 
-<button class="secondary" onclick="showPage('history')">↕ Historique</button>
+<button
+class="secondary"
+onclick="showPage('history')">
+↕ Historique
+</button>
 
 </div>
 
-<div class="section">Ce mois</div>
+
+<div class="section">
+Ce mois
+</div>
+
 
 <div class="card">
 
+
 <div class="row">
-<span class="green">● Revenus</span>
-<strong id="income">0.00 CHF</strong>
-</div>
 
-<div class="row" style="margin-top:11px">
-<span class="red">● Dépenses</span>
-<strong id="expensesTotal">0.00 CHF</strong>
-</div>
+<span class="green">
+● Revenus
+</span>
 
-<div class="row" style="margin-top:11px">
-<span class="muted">Charges fixes enregistrées</span>
-<strong id="fixedTotal">0.00 CHF</strong>
-</div>
+<strong id="income">
+0.00 CHF
+</strong>
 
 </div>
 
-<div class="section">Activité récente</div>
 
-<div class="card" id="recent">
-<div class="empty">Aucune opération pour le moment.</div>
+<div
+class="row"
+style="margin-top:11px">
+
+<span class="red">
+● Dépenses
+</span>
+
+<strong id="expensesTotal">
+0.00 CHF
+</strong>
+
 </div>
+
+
+<div
+class="row"
+style="margin-top:11px">
+
+<span class="muted">
+Charges fixes enregistrées
+</span>
+
+<strong id="fixedTotal">
+0.00 CHF
+</strong>
+
+</div>
+
+
+</div>
+
+
+<div class="section">
+Activité récente
+</div>
+
+
+<div
+class="card"
+id="recent">
+
+<div class="empty">
+Aucune opération pour le moment.
+</div>
+
+</div>
+
 
 </div>
 
 
 <!-- HISTORIQUE -->
 
-<div id="history" class="page">
+<div
+id="history"
+class="page">
+
 
 <div class="row">
-<h2>Historique</h2>
-<button class="secondary" onclick="showPage('home')">Accueil</button>
+
+<h2>
+Historique
+</h2>
+
+<button
+class="secondary"
+onclick="showPage('home')">
+Accueil
+</button>
+
 </div>
+
 
 <div class="card">
-<div class="muted">Total des dépenses</div>
-<div class="big" id="historyTotal">0.00 CHF</div>
+
+<div class="muted">
+Total des dépenses
 </div>
 
-<div id="historyList"></div>
+<div
+class="big"
+id="historyTotal">
+0.00 CHF
+</div>
 
 </div>
+
+
+<div id="historyList">
+</div>
+
+
+</div>
+
 
 </div>
 
@@ -169,25 +529,50 @@ input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;
 
 <div class="navin">
 
+
 <button onclick="showPage('home')">
-<b>⌂</b>
+
+<b>
+⌂
+</b>
+
 Accueil
+
 </button>
+
 
 <button onclick="showPage('history')">
-<b>↕</b>
+
+<b>
+↕
+</b>
+
 Historique
+
 </button>
+
 
 <button onclick="openExpense()">
-<b>＋</b>
+
+<b>
+＋
+</b>
+
 Dépense
+
 </button>
 
+
 <button onclick="openSettings()">
-<b>⚙</b>
+
+<b>
+⚙
+</b>
+
 Réglages
+
 </button>
+
 
 </div>
 
@@ -196,18 +581,34 @@ Réglages
 
 <!-- MODALE -->
 
-<div class="modal" id="modal">
+<div
+class="modal"
+id="modal">
 
-<div class="box" id="box"></div>
+<div
+class="box"
+id="box">
+</div>
 
 </div>
 
 
 <script>
 
-const KEY="SOLDEO";
 
-let data=JSON.parse(localStorage.getItem(KEY)||"null") || {
+/* =========================
+   DONNEES
+========================= */
+
+const KEY = "SOLDEO";
+
+
+let data =
+JSON.parse(
+localStorage.getItem(KEY) || "null"
+)
+||
+{
 salary:0,
 salaryDate:"",
 nextSalary:"",
@@ -217,240 +618,453 @@ fixed:[]
 };
 
 
+/* =========================
+   SAUVEGARDE
+========================= */
+
 function saveData(){
-localStorage.setItem(KEY,JSON.stringify(data));
+
+localStorage.setItem(
+KEY,
+JSON.stringify(data)
+);
+
 }
 
+
+/* =========================
+   FORMAT MONETAIRE
+========================= */
 
 function money(value){
 
-return Number(value||0).toLocaleString("fr-CH",{
+return Number(value || 0)
+.toLocaleString(
+"fr-CH",
+{
 minimumFractionDigits:2,
 maximumFractionDigits:2
-})+" CHF";
+}
+)
++
+" CHF";
 
 }
 
+
+/* =========================
+   DATE DU JOUR
+========================= */
 
 function today(){
 
-return new Date().toISOString().slice(0,10);
+return new Date()
+.toISOString()
+.slice(0,10);
 
 }
 
+
+/* =========================
+   FORMAT DATE
+========================= */
 
 function formatDate(value){
 
-if(!value)return "";
+if(!value){
+return "";
+}
 
-return new Date(value+"T00:00:00").toLocaleDateString("fr-CH");
+return new Date(
+value + "T00:00:00"
+)
+.toLocaleDateString("fr-CH");
 
 }
 
+
+/* =========================
+   JOURS RESTANTS
+========================= */
 
 function daysLeft(){
 
-if(!data.nextSalary)return 0;
+if(!data.nextSalary){
+return 0;
+}
 
-let a=new Date();
-let b=new Date(data.nextSalary+"T00:00:00");
+let start = new Date();
 
-a.setHours(0,0,0,0);
+let end =
+new Date(
+data.nextSalary + "T00:00:00"
+);
 
-return Math.max(0,Math.ceil((b-a)/86400000));
+start.setHours(0,0,0,0);
+
+return Math.max(
+0,
+Math.ceil(
+(end-start)/86400000
+)
+);
 
 }
 
+
+/* =========================
+   CHARGES FIXES
+========================= */
 
 function totalFixed(){
 
-return data.fixed.reduce(function(total,item){
+return data.fixed.reduce(
+function(total,item){
 
-return total+Number(item.amount||0);
+return total +
+Number(item.amount || 0);
 
-},0);
+},
+0
+);
 
 }
 
+
+/* =========================
+   DEPENSES DU CYCLE
+========================= */
 
 function totalExpenses(){
 
 return data.expenses
 .filter(function(item){
 
-return item.cycle===data.cycle;
+return item.cycle === data.cycle;
 
 })
-.reduce(function(total,item){
+.reduce(
+function(total,item){
 
-return total+Number(item.amount||0);
+return total +
+Number(item.amount || 0);
 
-},0);
+},
+0
+);
 
 }
 
+
+/* =========================
+   DEPENSES AUJOURD'HUI
+========================= */
 
 function expensesToday(){
 
 return data.expenses
 .filter(function(item){
 
-return item.cycle===data.cycle &&
-item.date===today();
+return (
+item.cycle === data.cycle &&
+item.date === today()
+);
 
 })
-.reduce(function(total,item){
+.reduce(
+function(total,item){
 
-return total+Number(item.amount||0);
+return total +
+Number(item.amount || 0);
 
-},0);
+},
+0
+);
 
 }
 
 
+/* =========================
+   RESTE A VIVRE
+========================= */
+
 function remainingMoney(){
 
-return data.salary-totalFixed()-totalExpenses();
+return (
+Number(data.salary || 0)
+-
+totalFixed()
+-
+totalExpenses()
+);
 
+}
+
+
+/* =========================
+   BUDGET QUOTIDIEN
+========================= */
+
+function dailyBudget(){
+
+let days = daysLeft();
+
+if(!days){
+return 0;
 }
 
 
 /*
-Le budget quotidien tient compte des dépenses du jour.
-
-Exemple :
-80 CHF disponibles aujourd'hui
--15 CHF dépensés
-=65 CHF encore disponibles aujourd'hui
+On récupère l'argent disponible
+avant les dépenses d'aujourd'hui.
 */
 
-function dailyBudget(){
+let spentToday =
+expensesToday();
 
-let days=daysLeft();
+let availableBeforeToday =
+remainingMoney() + spentToday;
 
-if(!days)return 0;
 
-let spentToday=expensesToday();
+/*
+Budget théorique du jour
+*/
 
-let moneyBeforeToday=remainingMoney()+spentToday;
+let budgetBeforeToday =
+availableBeforeToday / days;
 
-let budgetBeforeToday=moneyBeforeToday/days;
 
-return Math.max(0,budgetBeforeToday-spentToday);
+/*
+On retire immédiatement
+ce qui a déjà été dépensé
+aujourd'hui.
+*/
+
+return Math.max(
+0,
+budgetBeforeToday - spentToday
+);
 
 }
 
 
+/* =========================
+   AFFICHAGE PRINCIPAL
+========================= */
+
 function render(){
 
-document.getElementById("month").textContent=
-new Date().toLocaleDateString("fr-CH",{
+document.getElementById(
+"month"
+).textContent =
+new Date().toLocaleDateString(
+"fr-CH",
+{
 month:"long",
 year:"numeric"
-});
-
-document.getElementById("remaining").textContent=
-money(remainingMoney());
-
-document.getElementById("daily").textContent=
-money(dailyBudget());
-
-document.getElementById("income").textContent=
-money(data.salary);
-
-document.getElementById("expensesTotal").textContent=
-money(totalExpenses());
-
-document.getElementById("fixedTotal").textContent=
-money(totalFixed());
+}
+);
 
 
-let todayAmount=expensesToday();
+document.getElementById(
+"remaining"
+).textContent =
+money(
+remainingMoney()
+);
 
-document.getElementById("todaySpent").textContent=
+
+document.getElementById(
+"daily"
+).textContent =
+money(
+dailyBudget()
+);
+
+
+document.getElementById(
+"income"
+).textContent =
+money(
+data.salary
+);
+
+
+document.getElementById(
+"expensesTotal"
+).textContent =
+money(
+totalExpenses()
+);
+
+
+document.getElementById(
+"fixedTotal"
+).textContent =
+money(
+totalFixed()
+);
+
+
+let todayAmount =
+expensesToday();
+
+
+document.getElementById(
+"todaySpent"
+).textContent =
 todayAmount
-?money(todayAmount)+" déjà dépensés aujourd'hui"
-:"Aucune dépense aujourd'hui";
+?
+money(todayAmount) +
+" déjà dépensés aujourd'hui"
+:
+"Aucune dépense aujourd'hui";
 
 
 if(data.nextSalary){
 
-document.getElementById("salaryInfo").textContent=
-"Prochain salaire : "+formatDate(data.nextSalary);
+document.getElementById(
+"salaryInfo"
+).textContent =
+"Prochain salaire : " +
+formatDate(data.nextSalary);
 
-let d=daysLeft();
 
-document.getElementById("daysInfo").textContent=
-d+" jour"+(d>1?"s":"");
+let days =
+daysLeft();
 
-}else{
 
-document.getElementById("salaryInfo").textContent=
+document.getElementById(
+"daysInfo"
+).textContent =
+days +
+" jour" +
+(days > 1 ? "s" : "");
+
+}
+
+else{
+
+document.getElementById(
+"salaryInfo"
+).textContent =
 "Aucun prochain salaire";
 
-document.getElementById("daysInfo").textContent=
+
+document.getElementById(
+"daysInfo"
+).textContent =
 "— jours";
 
 }
 
 
-let base=Math.max(0,data.salary-totalFixed());
+/*
+Pourcentage basé sur :
+salaire - charges fixes
+*/
 
-let percent=base
-?Math.min(100,totalExpenses()/base*100)
-:0;
+let base =
+Math.max(
+0,
+Number(data.salary || 0)
+-
+totalFixed()
+);
 
-document.getElementById("percent").textContent=
-percent.toFixed(0)+"%";
 
-document.getElementById("bar").style.width=
-percent+"%";
+let percentage =
+base
+?
+Math.min(
+100,
+totalExpenses() / base * 100
+)
+:
+0;
 
-document.getElementById("spentText").textContent=
+
+document.getElementById(
+"percent"
+).textContent =
+percentage.toFixed(0) +
+"%";
+
+
+document.getElementById(
+"bar"
+).style.width =
+percentage +
+"%";
+
+
+document.getElementById(
+"spentText"
+).textContent =
 totalExpenses()
-?money(totalExpenses())+" dépensés"
-:"Aucune dépense";
+?
+money(totalExpenses()) +
+" dépensés"
+:
+"Aucune dépense";
 
 
 renderRecent();
+
 renderHistory();
 
 }
 
 
+/* =========================
+   ACTIVITE RECENTE
+========================= */
+
 function renderRecent(){
 
-let list=data.expenses
+let list =
+data.expenses
 .filter(function(item){
 
-return item.cycle===data.cycle;
+return item.cycle === data.cycle;
 
 })
 .slice()
 .reverse()
 .slice(0,6);
 
+
 if(!list.length){
 
-document.getElementById("recent").innerHTML=
-'<div class="empty">Aucune dépense pour le moment.</div>';
+document.getElementById(
+"recent"
+).innerHTML =
+'<div class="empty">Aucune opération pour le moment.</div>';
 
 return;
 
 }
 
 
-document.getElementById("recent").innerHTML=
+document.getElementById(
+"recent"
+).innerHTML =
+
 list.map(function(item){
 
-let index=data.expenses.indexOf(item);
+let index =
+data.expenses.indexOf(item);
+
 
 return `
+
 <div class="item">
 
 <div>
 
-<strong>${item.label||"Dépense"}</strong>
+<strong>
+${item.label || "Dépense"}
+</strong>
 
 <div class="muted">
 ${item.category} · ${formatDate(item.date)}
@@ -481,6 +1095,7 @@ Supprimer
 </strong>
 
 </div>
+
 `;
 
 }).join("");
@@ -488,634 +1103,76 @@ Supprimer
 }
 
 
-function openExpense(index=null){
+/* =========================
+   AJOUT / MODIFICATION DEPENSE
+========================= */
 
-let item=index===null
-?null
-:data.expenses[index];
+function openExpense(index){
 
-document.getElementById("box").innerHTML=`
+let item =
+index === undefined ||
+index === null
+?
+null
+:
+data.expenses[index];
 
-<h2>${item?"Modifier la dépense":"Ajouter une dépense"}</h2>
 
-<label>Description</label>
+document.getElementById(
+"box"
+).innerHTML = `
+
+<h2>
+${item ? "Modifier la dépense" : "Ajouter une dépense"}
+</h2>
+
+
+<label>
+Description
+</label>
 
 <input
 id="expenseLabel"
-value="${item?.label||""}"
+value="${item ? item.label : ""}"
 placeholder="Ex. Courses">
 
-<label>Montant</label>
+
+<label>
+Montant
+</label>
 
 <input
 id="expenseAmount"
 type="number"
 step="0.01"
-value="${item?.amount||""}"
+value="${item ? item.amount : ""}"
 placeholder="0.00">
 
-<label>Catégorie</label>
+
+<label>
+Catégorie
+</label>
 
 <select id="expenseCategory">
 
-<option ${item?.category==="Alimentation"?"selected":""}>
+<option ${item && item.category==="Alimentation" ? "selected" : ""}>
 Alimentation
 </option>
 
-<option ${item?.category==="Transport"?"selected":""}>
+<option ${item && item.category==="Transport" ? "selected" : ""}>
 Transport
 </option>
 
-<option ${item?.category==="Loisirs"?"selected":""}>
+<option ${item && item.category==="Loisirs" ? "selected" : ""}>
 Loisirs
 </option>
 
-<option ${item?.category==="Shopping"?"selected":""}>
+<option ${item && item.category==="Shopping" ? "selected" : ""}>
 Shopping
 </option>
 
-<option ${item?.category==="Restaurant"?"selected":""}>
+<option ${item && item.category==="Restaurant" ? "selected" : ""}>
 Restaurant
 </option>
 
-<option ${item?.category==="Autre"?"selected":""}>
-Autre
-</option>
-
-</select>
-
-<label>Date</label>
-
-<input
-id="expenseDate"
-type="date"
-value="${item?.date||today()}">
-
-<div class="modalBtns">
-
-<button
-class="secondary"
-onclick="closeModal()">
-Annuler
-</button>
-
-<button
-class="primary"
-onclick="saveExpense(${index===null?"null":index})">
-Enregistrer
-</button>
-
-</div>
-`;
-
-openModal();
-
-}
-
-
-function saveExpense(index){
-
-let amount=Number(
-document.getElementById("expenseAmount").value
-);
-
-if(amount<=0){
-
-alert("Entre un montant valide.");
-
-return;
-
-}
-
-
-let item={
-
-label:
-document.getElementById("expenseLabel").value||
-"Dépense",
-
-amount:amount,
-
-category:
-document.getElementById("expenseCategory").value,
-
-date:
-document.getElementById("expenseDate").value||
-today(),
-
-cycle:data.cycle
-
-};
-
-
-if(index===null){
-
-data.expenses.push(item);
-
-}else{
-
-data.expenses[index]=item;
-
-}
-
-saveData();
-
-closeModal();
-
-render();
-
-}
-
-
-function editExpense(index){
-
-openExpense(index);
-
-}
-
-
-function deleteExpense(index){
-
-if(!confirm("Supprimer cette dépense ?"))return;
-
-data.expenses.splice(index,1);
-
-saveData();
-
-render();
-
-}
-
-
-function openSalary(){
-
-document.getElementById("box").innerHTML=`
-
-<h2>Nouveau salaire</h2>
-
-<label>Montant reçu</label>
-
-<input
-id="salaryAmount"
-type="number"
-step="0.01"
-placeholder="Ex. 4400">
-
-<label>Date du salaire</label>
-
-<input
-id="salaryDate"
-type="date"
-value="${today()}">
-
-<label>Prochain salaire</label>
-
-<input
-id="nextSalary"
-type="date"
-value="${data.nextSalary||""}">
-
-<div class="modalBtns">
-
-<button
-class="secondary"
-onclick="closeModal()">
-Annuler
-</button>
-
-<button
-class="primary"
-onclick="saveSalary()">
-Enregistrer
-</button>
-
-</div>
-`;
-
-openModal();
-
-}
-
-
-function saveSalary(){
-
-let amount=Number(
-document.getElementById("salaryAmount").value
-);
-
-if(amount<=0){
-
-alert("Entre un montant valide.");
-
-return;
-
-}
-
-
-data.salary=amount;
-
-data.salaryDate=
-document.getElementById("salaryDate").value||today();
-
-data.nextSalary=
-document.getElementById("nextSalary").value||"";
-
-data.cycle=
-Date.now().toString();
-
-
-saveData();
-
-closeModal();
-
-render();
-
-}
-
-
-function openSettings(){
-
-document.getElementById("box").innerHTML=`
-
-<h2>Réglages</h2>
-
-<label>Prochain salaire</label>
-
-<input
-id="settingsNextSalary"
-type="date"
-value="${data.nextSalary||""}">
-
-<button
-class="primary"
-style="width:100%"
-onclick="saveSettings()">
-Enregistrer
-</button>
-
-<h3>Charges fixes mensuelles</h3>
-
-<div id="fixedList">
-
-${
-data.fixed.length
-?
-data.fixed.map(function(item,index){
-
-return `
-
-<div class="item">
-
-<div>
-
-<strong>${item.label}</strong>
-
-<div class="muted">
-${money(item.amount)} / mois
-</div>
-
-</div>
-
-<div>
-
-<button
-class="secondary"
-style="font-size:11px;padding:6px"
-onclick="editFixed(${index})">
-Modifier
-</button>
-
-<button
-class="secondary"
-style="font-size:11px;padding:6px"
-onclick="deleteFixed(${index})">
-×
-</button>
-
-</div>
-
-</div>
-
-`;
-
-}).join("")
-:
-'<div class="empty">Aucune charge fixe.</div>'
-}
-
-</div>
-
-<h3>Ajouter une charge</h3>
-
-<input
-id="fixedLabel"
-placeholder="Ex. Loyer">
-
-<input
-id="fixedAmount"
-type="number"
-step="0.01"
-placeholder="Montant">
-
-<button
-class="secondary"
-style="width:100%"
-onclick="addFixed()">
-＋ Ajouter
-</button>
-
-`;
-
-openModal();
-
-}
-
-
-function saveSettings(){
-
-data.nextSalary=
-document.getElementById("settingsNextSalary").value||"";
-
-saveData();
-
-closeModal();
-
-render();
-
-}
-
-
-function addFixed(){
-
-let label=
-document.getElementById("fixedLabel").value.trim();
-
-let amount=
-Number(document.getElementById("fixedAmount").value);
-
-if(!label||amount<=0){
-
-alert("Entre un nom et un montant.");
-
-return;
-
-}
-
-data.fixed.push({
-label:label,
-amount:amount
-});
-
-saveData();
-
-openSettings();
-
-render();
-
-}
-
-
-function editFixed(index){
-
-let item=data.fixed[index];
-
-document.getElementById("box").innerHTML=`
-
-<h2>Modifier la charge</h2>
-
-<input
-id="editFixedLabel"
-value="${item.label}">
-
-<input
-id="editFixedAmount"
-type="number"
-step="0.01"
-value="${item.amount}">
-
-<div class="modalBtns">
-
-<button
-class="secondary"
-onclick="openSettings()">
-Annuler
-</button>
-
-<button
-class="primary"
-onclick="saveFixed(${index})">
-Enregistrer
-</button>
-
-</div>
-
-`;
-
-}
-
-
-function saveFixed(index){
-
-let label=
-document.getElementById("editFixedLabel").value.trim();
-
-let amount=
-Number(document.getElementById("editFixedAmount").value);
-
-if(!label||amount<=0)return;
-
-data.fixed[index]={
-label:label,
-amount:amount
-};
-
-saveData();
-
-openSettings();
-
-render();
-
-}
-
-
-function deleteFixed(index){
-
-if(!confirm("Supprimer cette charge ?"))return;
-
-data.fixed.splice(index,1);
-
-saveData();
-
-openSettings();
-
-render();
-
-}
-
-
-function showPage(pageName){
-
-document.querySelectorAll(".page")
-.forEach(function(page){
-
-page.classList.remove("active");
-
-});
-
-document.getElementById(pageName)
-.classList.add("active");
-
-}
-
-
-function renderHistory(){
-
-let groups={};
-
-data.expenses.forEach(function(item,index){
-
-if(!groups[item.date]){
-groups[item.date]=[];
-}
-
-groups[item.date].push({
-...item,
-index:index
-});
-
-});
-
-
-let total=data.expenses.reduce(function(sum,item){
-
-return sum+Number(item.amount||0);
-
-},0);
-
-
-document.getElementById("historyTotal")
-.textContent=money(total);
-
-
-let dates=Object.keys(groups)
-.sort()
-.reverse();
-
-
-if(!dates.length){
-
-document.getElementById("historyList").innerHTML=
-'<div class="card"><div class="empty">Aucune dépense enregistrée.</div></div>';
-
-return;
-
-}
-
-
-document.getElementById("historyList").innerHTML=
-
-dates.map(function(day){
-
-let dayTotal=groups[day].reduce(function(sum,item){
-
-return sum+Number(item.amount||0);
-
-},0);
-
-
-return `
-
-<div class="card">
-
-<div class="row">
-
-<strong>${formatDate(day)}</strong>
-
-<strong class="red">
-− ${money(dayTotal)}
-</strong>
-
-</div>
-
-${groups[day].map(function(item){
-
-return `
-
-<div class="item">
-
-<div>
-
-<strong>${item.label||"Dépense"}</strong>
-
-<div class="muted">
-${item.category}
-</div>
-
-</div>
-
-<div style="text-align:right">
-
-<strong class="red">
-− ${money(item.amount)}
-</strong>
-
-<br>
-
-<button
-class="secondary"
-style="font-size:11px;padding:6px"
-onclick="editExpense(${item.index})">
-Modifier
-</button>
-
-</div>
-
-</div>
-
-`;
-
-}).join("")}
-
-</div>
-
-`;
-
-}).join("");
-
-}
-
-
-function openModal(){
-
-document.getElementById("modal")
-.classList.add("show");
-
-}
-
-
-function closeModal(){
-
-document.getElementById("modal")
-.classList.remove("show");
-
-}
-
-
-document.getElementById("modal")
-.onclick=function(event){
-
-if(event.target===this){
-
-closeModal();
-
-}
-
-};
-
-
-render();
-
-</script>
-
-</body>
-</html>
+<option ${item && item
