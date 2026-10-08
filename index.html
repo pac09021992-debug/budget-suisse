@@ -19,11 +19,12 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 .card{background:white;border-radius:19px;padding:16px;margin:12px 0;box-shadow:0 4px 18px #0000000b}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .big{font-size:24px;font-weight:900}
-.green{color:#20ad68}.red{color:#e95360}
+.green{color:#20ad68}
+.red{color:#e95360}
 .progress{height:9px;background:#edf0f5;border-radius:9px;margin-top:12px}
 .bar{height:100%;border-radius:9px;background:linear-gradient(90deg,#20ad68,#f5a623,#e95360)}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
-button{border:0;border-radius:14px;padding:13px;font-weight:800;font-size:14px}
+button{border:0;border-radius:14px;padding:13px;font-weight:800;font-size:14px;cursor:pointer}
 .primary{background:linear-gradient(135deg,#536dfe,#7856e8);color:white}
 .secondary{background:white;border:1px solid #dfe4ed;color:#27324a}
 .section{font-weight:900;margin:20px 2px 8px}
@@ -33,12 +34,14 @@ button{border:0;border-radius:14px;padding:13px;font-weight:800;font-size:14px}
 .navin{max-width:430px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr)}
 .nav button{background:white;border-radius:0;color:#777;font-size:11px}
 .nav b{display:block;font-size:20px}
-.page{display:none}.page.active{display:block}
+.page{display:none}
+.page.active{display:block}
 .modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:center;justify-content:center;padding:18px}
 .modal.show{display:flex}
 .box{background:white;border-radius:22px;padding:20px;width:100%;max-width:390px;max-height:90vh;overflow:auto}
 input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;border-radius:11px;font-size:16px}
-.modalBtns{display:flex;gap:8px}.modalBtns button{flex:1}
+.modalBtns{display:flex;gap:8px}
+.modalBtns button{flex:1}
 .empty{text-align:center;color:#888;padding:20px}
 </style>
 </head>
@@ -58,6 +61,7 @@ input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;
 <div class="hero">
 <small>Reste à vivre jusqu'au prochain salaire</small>
 <div class="balance" id="remaining">0.00 CHF</div>
+
 <div class="info">
 <span id="salaryInfo">Aucun salaire</span>
 <span id="daysInfo">— jours</span>
@@ -65,54 +69,72 @@ input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;
 </div>
 
 <div class="card">
+
 <div class="row">
 <div>
 <strong>Aujourd'hui</strong>
 <div class="muted">Ce que tu peux encore dépenser</div>
 </div>
+
 <div class="big" id="daily">0.00 CHF</div>
 </div>
+
 <div class="muted" id="todaySpent"></div>
+
 </div>
 
 <div class="card">
+
 <div class="row">
 <div>
 <strong>Budget utilisé</strong>
 <div class="muted" id="spentText">Aucune dépense</div>
 </div>
+
 <div class="big" id="percent">0%</div>
 </div>
+
 <div class="progress">
 <div class="bar" id="bar" style="width:0%"></div>
 </div>
+
 </div>
 
 <div class="actions">
-<button class="primary" onclick="expense()">＋ Dépense</button>
-<button class="secondary" onclick="salary()">＋ Salaire</button>
-<button class="secondary" onclick="settings()">⚙ Réglages</button>
-<button class="secondary" onclick="page('history')">↕ Historique</button>
+
+<button class="primary" onclick="openExpense()">＋ Dépense</button>
+
+<button class="secondary" onclick="openSalary()">＋ Salaire</button>
+
+<button class="secondary" onclick="openSettings()">⚙ Réglages</button>
+
+<button class="secondary" onclick="showPage('history')">↕ Historique</button>
+
 </div>
 
 <div class="section">Ce mois</div>
 
 <div class="card">
+
 <div class="row">
 <span class="green">● Revenus</span>
 <strong id="income">0.00 CHF</strong>
 </div>
+
 <div class="row" style="margin-top:11px">
 <span class="red">● Dépenses</span>
-<strong id="expenses">0.00 CHF</strong>
+<strong id="expensesTotal">0.00 CHF</strong>
 </div>
+
 <div class="row" style="margin-top:11px">
 <span class="muted">Charges fixes enregistrées</span>
-<strong id="fixed">0.00 CHF</strong>
+<strong id="fixedTotal">0.00 CHF</strong>
 </div>
+
 </div>
 
 <div class="section">Activité récente</div>
+
 <div class="card" id="recent">
 <div class="empty">Aucune opération pour le moment.</div>
 </div>
@@ -121,11 +143,12 @@ input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;
 
 
 <!-- HISTORIQUE -->
+
 <div id="history" class="page">
 
 <div class="row">
 <h2>Historique</h2>
-<button class="secondary" onclick="page('home')">Accueil</button>
+<button class="secondary" onclick="showPage('home')">Accueil</button>
 </div>
 
 <div class="card">
@@ -141,32 +164,42 @@ input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;
 
 
 <!-- NAVIGATION -->
+
 <div class="nav">
+
 <div class="navin">
 
-<button onclick="page('home')">
-<b>⌂</b>Accueil
+<button onclick="showPage('home')">
+<b>⌂</b>
+Accueil
 </button>
 
-<button onclick="page('history')">
-<b>↕</b>Historique
+<button onclick="showPage('history')">
+<b>↕</b>
+Historique
 </button>
 
-<button onclick="expense()">
-<b>＋</b>Dépense
+<button onclick="openExpense()">
+<b>＋</b>
+Dépense
 </button>
 
-<button onclick="settings()">
-<b>⚙</b>Réglages
+<button onclick="openSettings()">
+<b>⚙</b>
+Réglages
 </button>
 
 </div>
+
 </div>
 
 
 <!-- MODALE -->
+
 <div class="modal" id="modal">
+
 <div class="box" id="box"></div>
+
 </div>
 
 
@@ -174,7 +207,7 @@ input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #dce2eb;
 
 const KEY="SOLDEO";
 
-let d=JSON.parse(localStorage.getItem(KEY)||"null")||{
+let data=JSON.parse(localStorage.getItem(KEY)||"null") || {
 salary:0,
 salaryDate:"",
 nextSalary:"",
@@ -183,178 +216,259 @@ expenses:[],
 fixed:[]
 };
 
-function save(){
-localStorage.setItem(KEY,JSON.stringify(d));
+
+function saveData(){
+localStorage.setItem(KEY,JSON.stringify(data));
 }
 
-function money(x){
-return Number(x||0).toLocaleString("fr-CH",{
+
+function money(value){
+
+return Number(value||0).toLocaleString("fr-CH",{
 minimumFractionDigits:2,
 maximumFractionDigits:2
 })+" CHF";
+
 }
+
 
 function today(){
+
 return new Date().toISOString().slice(0,10);
+
 }
 
-function date(x){
-return x?new Date(x+"T00:00:00").toLocaleDateString("fr-CH"):"";
+
+function formatDate(value){
+
+if(!value)return "";
+
+return new Date(value+"T00:00:00").toLocaleDateString("fr-CH");
+
 }
 
-function days(){
 
-if(!d.nextSalary)return 0;
+function daysLeft(){
+
+if(!data.nextSalary)return 0;
 
 let a=new Date();
-let b=new Date(d.nextSalary+"T00:00:00");
+let b=new Date(data.nextSalary+"T00:00:00");
 
 a.setHours(0,0,0,0);
 
 return Math.max(0,Math.ceil((b-a)/86400000));
+
 }
 
-function fixed(){
 
-return d.fixed.reduce((s,x)=>s+Number(x.amount),0);
+function totalFixed(){
+
+return data.fixed.reduce(function(total,item){
+
+return total+Number(item.amount||0);
+
+},0);
+
 }
 
-function expenses(){
 
-return d.expenses
-.filter(x=>x.cycle===d.cycle)
-.reduce((s,x)=>s+Number(x.amount),0);
+function totalExpenses(){
+
+return data.expenses
+.filter(function(item){
+
+return item.cycle===data.cycle;
+
+})
+.reduce(function(total,item){
+
+return total+Number(item.amount||0);
+
+},0);
+
 }
 
-function remaining(){
 
-return d.salary-fixed()-expenses();
+function expensesToday(){
+
+return data.expenses
+.filter(function(item){
+
+return item.cycle===data.cycle &&
+item.date===today();
+
+})
+.reduce(function(total,item){
+
+return total+Number(item.amount||0);
+
+},0);
+
 }
 
-function spentToday(){
 
-return d.expenses
-.filter(x=>x.cycle===d.cycle&&x.date===today())
-.reduce((s,x)=>s+Number(x.amount),0);
+function remainingMoney(){
+
+return data.salary-totalFixed()-totalExpenses();
+
 }
 
-/* 
-Le budget quotidien diminue immédiatement avec
-les dépenses faites aujourd'hui.
-80 CHF -> dépense 15 -> 65 CHF
+
+/*
+Le budget quotidien tient compte des dépenses du jour.
+
+Exemple :
+80 CHF disponibles aujourd'hui
+-15 CHF dépensés
+=65 CHF encore disponibles aujourd'hui
 */
 
-function daily(){
+function dailyBudget(){
 
-let n=days();
+let days=daysLeft();
 
-if(!n)return 0;
+if(!days)return 0;
 
-let spent=spentToday();
+let spentToday=expensesToday();
 
-let before=remaining()+spent;
+let moneyBeforeToday=remainingMoney()+spentToday;
 
-return Math.max(0,before/n-spent);
+let budgetBeforeToday=moneyBeforeToday/days;
+
+return Math.max(0,budgetBeforeToday-spentToday);
+
 }
+
 
 function render(){
 
 document.getElementById("month").textContent=
-new Date().toLocaleDateString("fr-CH",{month:"long",year:"numeric"});
+new Date().toLocaleDateString("fr-CH",{
+month:"long",
+year:"numeric"
+});
 
 document.getElementById("remaining").textContent=
-money(remaining());
+money(remainingMoney());
 
 document.getElementById("daily").textContent=
-money(daily());
+money(dailyBudget());
 
 document.getElementById("income").textContent=
-money(d.salary);
+money(data.salary);
 
-document.getElementById("expenses").textContent=
-money(expenses());
+document.getElementById("expensesTotal").textContent=
+money(totalExpenses());
 
-document.getElementById("fixed").textContent=
-money(fixed());
+document.getElementById("fixedTotal").textContent=
+money(totalFixed());
 
-let s=spentToday();
+
+let todayAmount=expensesToday();
 
 document.getElementById("todaySpent").textContent=
-s?money(s)+" déjà dépensés aujourd'hui":"Aucune dépense aujourd'hui";
+todayAmount
+?money(todayAmount)+" déjà dépensés aujourd'hui"
+:"Aucune dépense aujourd'hui";
 
-if(d.nextSalary){
+
+if(data.nextSalary){
 
 document.getElementById("salaryInfo").textContent=
-"Prochain salaire : "+date(d.nextSalary);
+"Prochain salaire : "+formatDate(data.nextSalary);
+
+let d=daysLeft();
 
 document.getElementById("daysInfo").textContent=
-days()+" jour"+(days()>1?"s":"");
+d+" jour"+(d>1?"s":"");
 
 }else{
 
 document.getElementById("salaryInfo").textContent=
 "Aucun prochain salaire";
 
-document.getElementById("daysInfo").textContent="— jours";
+document.getElementById("daysInfo").textContent=
+"— jours";
 
 }
 
-let base=Math.max(0,d.salary-fixed());
 
-let p=base?Math.min(100,expenses()/base*100):0;
+let base=Math.max(0,data.salary-totalFixed());
+
+let percent=base
+?Math.min(100,totalExpenses()/base*100)
+:0;
 
 document.getElementById("percent").textContent=
-p.toFixed(0)+"%";
+percent.toFixed(0)+"%";
 
-document.getElementById("bar").style.width=p+"%";
+document.getElementById("bar").style.width=
+percent+"%";
 
 document.getElementById("spentText").textContent=
-expenses()?money(expenses())+" dépensés":"Aucune dépense";
+totalExpenses()
+?money(totalExpenses())+" dépensés"
+:"Aucune dépense";
 
-recent();
-history();
+
+renderRecent();
+renderHistory();
 
 }
 
-function recent(){
 
-let e=d.expenses
-.filter(x=>x.cycle===d.cycle)
+function renderRecent(){
+
+let list=data.expenses
+.filter(function(item){
+
+return item.cycle===data.cycle;
+
+})
 .slice()
 .reverse()
 .slice(0,6);
 
-if(!e.length){
+if(!list.length){
 
 document.getElementById("recent").innerHTML=
 '<div class="empty">Aucune dépense pour le moment.</div>';
 
 return;
+
 }
 
-document.getElementById("recent").innerHTML=
-e.map(x=>{
 
-let i=d.expenses.indexOf(x);
+document.getElementById("recent").innerHTML=
+list.map(function(item){
+
+let index=data.expenses.indexOf(item);
 
 return `
 <div class="item">
 
 <div>
-<strong>${x.label||"Dépense"}</strong>
-<div class="muted">${x.category} · ${date(x.date)}</div>
+
+<strong>${item.label||"Dépense"}</strong>
+
+<div class="muted">
+${item.category} · ${formatDate(item.date)}
+</div>
 
 <div style="margin-top:5px">
 
-<button class="secondary"
+<button
+class="secondary"
 style="font-size:11px;padding:6px"
-onclick="editExpense(${i})">
+onclick="editExpense(${index})">
 Modifier
 </button>
 
-<button class="secondary"
+<button
+class="secondary"
 style="font-size:11px;padding:6px"
-onclick="delExpense(${i})">
+onclick="deleteExpense(${index})">
 Supprimer
 </button>
 
@@ -362,7 +476,9 @@ Supprimer
 
 </div>
 
-<strong class="red">− ${money(x.amount)}</strong>
+<strong class="red">
+− ${money(item.amount)}
+</strong>
 
 </div>
 `;
@@ -371,53 +487,81 @@ Supprimer
 
 }
 
-function expense(i=null){
 
-let x=i===null?null:d.expenses[i];
+function openExpense(index=null){
+
+let item=index===null
+?null
+:data.expenses[index];
 
 document.getElementById("box").innerHTML=`
 
-<h2>${x?"Modifier la dépense":"Ajouter une dépense"}</h2>
+<h2>${item?"Modifier la dépense":"Ajouter une dépense"}</h2>
 
 <label>Description</label>
-<input id="elabel"
-value="${x?.label||""}"
+
+<input
+id="expenseLabel"
+value="${item?.label||""}"
 placeholder="Ex. Courses">
 
 <label>Montant</label>
-<input id="eamount"
+
+<input
+id="expenseAmount"
 type="number"
 step="0.01"
-value="${x?.amount||""}"
+value="${item?.amount||""}"
 placeholder="0.00">
 
 <label>Catégorie</label>
 
-<select id="ecat">
+<select id="expenseCategory">
 
-<option ${x?.category==="Alimentation"?"selected":""}>Alimentation</option>
-<option ${x?.category==="Transport"?"selected":""}>Transport</option>
-<option ${x?.category==="Loisirs"?"selected":""}>Loisirs</option>
-<option ${x?.category==="Shopping"?"selected":""}>Shopping</option>
-<option ${x?.category==="Restaurant"?"selected":""}>Restaurant</option>
-<option ${x?.category==="Autre"?"selected":""}>Autre</option>
+<option ${item?.category==="Alimentation"?"selected":""}>
+Alimentation
+</option>
+
+<option ${item?.category==="Transport"?"selected":""}>
+Transport
+</option>
+
+<option ${item?.category==="Loisirs"?"selected":""}>
+Loisirs
+</option>
+
+<option ${item?.category==="Shopping"?"selected":""}>
+Shopping
+</option>
+
+<option ${item?.category==="Restaurant"?"selected":""}>
+Restaurant
+</option>
+
+<option ${item?.category==="Autre"?"selected":""}>
+Autre
+</option>
 
 </select>
 
 <label>Date</label>
 
-<input id="edate"
+<input
+id="expenseDate"
 type="date"
-value="${x?.date||today()}">
+value="${item?.date||today()}">
 
 <div class="modalBtns">
 
-<button class="secondary" onclick="closeModal()">
+<button
+class="secondary"
+onclick="closeModal()">
 Annuler
 </button>
 
-<button class="primary"
-onclick="saveExpense(${i===null?"null":i})">
+<button
+class="primary"
+onclick="saveExpense(${index===null?"null":index})">
 Enregistrer
 </button>
 
@@ -428,52 +572,82 @@ openModal();
 
 }
 
-function saveExpense(i){
+
+function saveExpense(index){
 
 let amount=Number(
-document.getElementById("eamount").value
+document.getElementById("expenseAmount").value
 );
 
 if(amount<=0){
+
 alert("Entre un montant valide.");
+
 return;
+
 }
 
-let x={
-label:document.getElementById("elabel").value||"Dépense",
+
+let item={
+
+label:
+document.getElementById("expenseLabel").value||
+"Dépense",
+
 amount:amount,
-category:document.getElementById("ecat").value,
-date:document.getElementById("edate").value||today(),
-cycle:d.cycle
+
+category:
+document.getElementById("expenseCategory").value,
+
+date:
+document.getElementById("expenseDate").value||
+today(),
+
+cycle:data.cycle
+
 };
 
-if(i===null)
-d.expenses.push(x);
-else
-d.expenses[i]=x;
 
-save();
+if(index===null){
+
+data.expenses.push(item);
+
+}else{
+
+data.expenses[index]=item;
+
+}
+
+saveData();
+
 closeModal();
+
 render();
 
 }
 
-function editExpense(i){
-expense(i);
+
+function editExpense(index){
+
+openExpense(index);
+
 }
 
-function delExpense(i){
+
+function deleteExpense(index){
 
 if(!confirm("Supprimer cette dépense ?"))return;
 
-d.expenses.splice(i,1);
+data.expenses.splice(index,1);
 
-save();
+saveData();
+
 render();
 
 }
 
-function salary(){
+
+function openSalary(){
 
 document.getElementById("box").innerHTML=`
 
@@ -481,31 +655,36 @@ document.getElementById("box").innerHTML=`
 
 <label>Montant reçu</label>
 
-<input id="samount"
+<input
+id="salaryAmount"
 type="number"
 step="0.01"
 placeholder="Ex. 4400">
 
 <label>Date du salaire</label>
 
-<input id="sdate"
+<input
+id="salaryDate"
 type="date"
 value="${today()}">
 
 <label>Prochain salaire</label>
 
-<input id="snext"
+<input
+id="nextSalary"
 type="date"
-value="${d.nextSalary||""}">
+value="${data.nextSalary||""}">
 
 <div class="modalBtns">
 
-<button class="secondary"
+<button
+class="secondary"
 onclick="closeModal()">
 Annuler
 </button>
 
-<button class="primary"
+<button
+class="primary"
 onclick="saveSalary()">
 Enregistrer
 </button>
@@ -517,36 +696,44 @@ openModal();
 
 }
 
+
 function saveSalary(){
 
 let amount=Number(
-document.getElementById("samount").value
+document.getElementById("salaryAmount").value
 );
 
 if(amount<=0){
+
 alert("Entre un montant valide.");
+
 return;
+
 }
 
-/* nouveau salaire = nouveau cycle */
 
-d.salary=amount;
+data.salary=amount;
 
-d.salaryDate=
-document.getElementById("sdate").value||today();
+data.salaryDate=
+document.getElementById("salaryDate").value||today();
 
-d.nextSalary=
-document.getElementById("snext").value||"";
+data.nextSalary=
+document.getElementById("nextSalary").value||"";
 
-d.cycle=Date.now().toString();
+data.cycle=
+Date.now().toString();
 
-save();
+
+saveData();
+
 closeModal();
+
 render();
 
 }
 
-function settings(){
+
+function openSettings(){
 
 document.getElementById("box").innerHTML=`
 
@@ -554,11 +741,13 @@ document.getElementById("box").innerHTML=`
 
 <label>Prochain salaire</label>
 
-<input id="next"
+<input
+id="settingsNextSalary"
 type="date"
-value="${d.nextSalary||""}">
+value="${data.nextSalary||""}">
 
-<button class="primary"
+<button
+class="primary"
 style="width:100%"
 onclick="saveSettings()">
 Enregistrer
@@ -569,48 +758,67 @@ Enregistrer
 <div id="fixedList">
 
 ${
-d.fixed.length
-?d.fixed.map((x,i)=>`
+data.fixed.length
+?
+data.fixed.map(function(item,index){
+
+return `
 
 <div class="item">
 
 <div>
-<strong>${x.label}</strong>
-<div class="muted">${money(x.amount)} / mois</div>
+
+<strong>${item.label}</strong>
+
+<div class="muted">
+${money(item.amount)} / mois
+</div>
+
 </div>
 
 <div>
-<button class="secondary"
+
+<button
+class="secondary"
 style="font-size:11px;padding:6px"
-onclick="editFixed(${i})">
+onclick="editFixed(${index})">
 Modifier
 </button>
 
-<button class="secondary"
+<button
+class="secondary"
 style="font-size:11px;padding:6px"
-onclick="delFixed(${i})">
+onclick="deleteFixed(${index})">
 ×
 </button>
-</div>
 
 </div>
 
-`).join("")
-:'<div class="empty">Aucune charge fixe.</div>'
+</div>
+
+`;
+
+}).join("")
+:
+'<div class="empty">Aucune charge fixe.</div>'
 }
 
 </div>
 
 <h3>Ajouter une charge</h3>
 
-<input id="flabel" placeholder="Ex. Loyer">
+<input
+id="fixedLabel"
+placeholder="Ex. Loyer">
 
-<input id="famount"
+<input
+id="fixedAmount"
 type="number"
 step="0.01"
 placeholder="Montant">
 
-<button class="secondary"
+<button
+class="secondary"
 style="width:100%"
 onclick="addFixed()">
 ＋ Ajouter
@@ -622,133 +830,177 @@ openModal();
 
 }
 
+
 function saveSettings(){
 
-d.nextSalary=
-document.getElementById("next").value||"";
+data.nextSalary=
+document.getElementById("settingsNextSalary").value||"";
 
-save();
+saveData();
+
 closeModal();
+
 render();
 
 }
+
 
 function addFixed(){
 
 let label=
-document.getElementById("flabel").value.trim();
+document.getElementById("fixedLabel").value.trim();
 
 let amount=
-Number(document.getElementById("famount").value);
+Number(document.getElementById("fixedAmount").value);
 
 if(!label||amount<=0){
+
 alert("Entre un nom et un montant.");
+
 return;
+
 }
 
-d.fixed.push({label,amount});
+data.fixed.push({
+label:label,
+amount:amount
+});
 
-save();
-settings();
+saveData();
+
+openSettings();
+
 render();
 
 }
 
-function editFixed(i){
 
-let x=d.fixed[i];
+function editFixed(index){
+
+let item=data.fixed[index];
 
 document.getElementById("box").innerHTML=`
 
 <h2>Modifier la charge</h2>
 
-<input id="newlabel" value="${x.label}">
+<input
+id="editFixedLabel"
+value="${item.label}">
 
-<input id="newamount"
+<input
+id="editFixedAmount"
 type="number"
 step="0.01"
-value="${x.amount}">
+value="${item.amount}">
 
 <div class="modalBtns">
 
-<button class="secondary"
-onclick="settings()">
+<button
+class="secondary"
+onclick="openSettings()">
 Annuler
 </button>
 
-<button class="primary"
-onclick="saveFixed(${i})">
+<button
+class="primary"
+onclick="saveFixed(${index})">
 Enregistrer
 </button>
 
 </div>
+
 `;
 
 }
 
-function saveFixed(i){
+
+function saveFixed(index){
 
 let label=
-document.getElementById("newlabel").value.trim();
+document.getElementById("editFixedLabel").value.trim();
 
 let amount=
-Number(document.getElementById("newamount").value);
+Number(document.getElementById("editFixedAmount").value);
 
 if(!label||amount<=0)return;
 
-d.fixed[i]={label,amount};
+data.fixed[index]={
+label:label,
+amount:amount
+};
 
-save();
-settings();
+saveData();
+
+openSettings();
+
 render();
 
 }
 
-function delFixed(i){
+
+function deleteFixed(index){
 
 if(!confirm("Supprimer cette charge ?"))return;
 
-d.fixed.splice(i,1);
+data.fixed.splice(index,1);
 
-save();
-settings();
+saveData();
+
+openSettings();
+
 render();
 
 }
 
-function page(p){
+
+function showPage(pageName){
 
 document.querySelectorAll(".page")
-.forEach(x=>x.classList.remove("active"));
+.forEach(function(page){
 
-document.getElementById(p)
+page.classList.remove("active");
+
+});
+
+document.getElementById(pageName)
 .classList.add("active");
 
 }
 
-function history(){
+
+function renderHistory(){
 
 let groups={};
 
-d.expenses.forEach((x,i)=>{
+data.expenses.forEach(function(item,index){
 
-if(!groups[x.date])
-groups[x.date]=[];
+if(!groups[item.date]){
+groups[item.date]=[];
+}
 
-groups[x.date].push({...x,index:i});
+groups[item.date].push({
+...item,
+index:index
+});
 
 });
 
-let total=d.expenses.reduce(
-(s,x)=>s+Number(x.amount),0
-);
+
+let total=data.expenses.reduce(function(sum,item){
+
+return sum+Number(item.amount||0);
+
+},0);
+
 
 document.getElementById("historyTotal")
 .textContent=money(total);
 
+
 let dates=Object.keys(groups)
 .sort()
 .reverse();
+
 
 if(!dates.length){
 
@@ -756,45 +1008,63 @@ document.getElementById("historyList").innerHTML=
 '<div class="card"><div class="empty">Aucune dépense enregistrée.</div></div>';
 
 return;
+
 }
 
+
 document.getElementById("historyList").innerHTML=
-dates.map(day=>`
+
+dates.map(function(day){
+
+let dayTotal=groups[day].reduce(function(sum,item){
+
+return sum+Number(item.amount||0);
+
+},0);
+
+
+return `
 
 <div class="card">
 
 <div class="row">
 
-<strong>${date(day)}</strong>
+<strong>${formatDate(day)}</strong>
 
 <strong class="red">
-− ${money(
-groups[day].reduce((s,x)=>s+Number(x.amount),0)
-)}
+− ${money(dayTotal)}
 </strong>
 
 </div>
 
-${groups[day].map(x=>`
+${groups[day].map(function(item){
+
+return `
 
 <div class="item">
 
 <div>
-<strong>${x.label||"Dépense"}</strong>
-<div class="muted">${x.category}</div>
+
+<strong>${item.label||"Dépense"}</strong>
+
+<div class="muted">
+${item.category}
+</div>
+
 </div>
 
 <div style="text-align:right">
 
 <strong class="red">
-− ${money(x.amount)}
+− ${money(item.amount)}
 </strong>
 
 <br>
 
-<button class="secondary"
+<button
+class="secondary"
 style="font-size:11px;padding:6px"
-onclick="editExpense(${x.index})">
+onclick="editExpense(${item.index})">
 Modifier
 </button>
 
@@ -802,31 +1072,46 @@ Modifier
 
 </div>
 
-`).join("")}
+`;
+
+}).join("")}
 
 </div>
 
-`).join("");
+`;
+
+}).join("");
 
 }
+
 
 function openModal(){
+
 document.getElementById("modal")
 .classList.add("show");
+
 }
+
 
 function closeModal(){
+
 document.getElementById("modal")
 .classList.remove("show");
+
 }
 
-document.getElementById("modal")
-.onclick=function(e){
 
-if(e.target===this)
+document.getElementById("modal")
+.onclick=function(event){
+
+if(event.target===this){
+
 closeModal();
 
+}
+
 };
+
 
 render();
 
