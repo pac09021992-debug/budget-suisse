@@ -43,6 +43,10 @@ jobs:
             exit 1
           fi
 
+      
+      - name: Synchroniser SOLDEO
+        working-directory: soldeo-android
+        run: npx cap sync android
       - name: Installer le vrai logo Catogne
         working-directory: soldeo-android
         run: |
@@ -50,9 +54,6 @@ jobs:
           cp ../soldeo_icon.png android/app/src/main/res/drawable/soldeo_icon.png
           sed -i 's#@mipmap/ic_launcher_round#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
           sed -i 's#@mipmap/ic_launcher#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
-      - name: Synchroniser SOLDEO
-        working-directory: soldeo-android
-        run: npx cap sync android
 
       - name: Construire l'APK
         working-directory: soldeo-android/android
