@@ -1,98 +1,1841 @@
-name: Build SOLDEO APK
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Budget — V6</title>
+<style>
+:root{--bg:#f3f7ff;--card:#fff;--text:#182033;--muted:#737b8c;--line:#e4e9f3;--accent:#536dfe;--green:#20b26b;--red:#ef5b67;--blue:#4b7bec;--orange:#f5a623}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text)}
+.app{max-width:430px;margin:auto;min-height:100vh;padding:18px 16px 95px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.logo{font-weight:850;font-size:25px;letter-spacing:-.5px;color:#26345a}
+.month{font-size:13px;color:var(--muted);background:#fff;padding:7px 11px;border-radius:12px;border:1px solid var(--line)}
+.hero{background:linear-gradient(135deg,#526dfe,#7856e8);color:white;border-radius:26px;padding:23px;margin-bottom:14px;box-shadow:0 12px 28px #536dfe35}
+.label{font-size:13px;opacity:.7}.balance{font-size:38px;font-weight:800;margin:5px 0 18px}
+.heroRow{display:flex;justify-content:space-between;font-size:13px}
+.card{background:var(--card);border-radius:20px;padding:17px;margin-bottom:12px;border:1px solid var(--line);box-shadow:0 5px 18px #536dfe0d}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.title{font-weight:750}.muted{color:var(--muted);font-size:13px}
+.big{font-size:25px;font-weight:850;margin-top:5px}
+.progress{height:10px;background:#edf0f6;border-radius:10px;overflow:hidden;margin:12px 0 7px}
+.bar{height:100%;width:0%;background:linear-gradient(90deg,#20b26b,#f5a623,#ef5b67);border-radius:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{border:0;border-radius:16px;padding:15px;font-weight:750;font-size:14px;cursor:pointer;box-shadow:0 4px 10px #26345a10}
+.primary{background:linear-gradient(135deg,#536dfe,#7058e8);color:#fff}
+.secondary{background:#fff;color:#26345a;border:1px solid var(--line)}
+.section{margin:20px 2px 9px;font-size:15px;font-weight:850;color:#26345a}
+.empty{text-align:center;padding:18px 5px;color:var(--muted);font-size:13px}
+.item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}.amount{font-weight:750}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:5}
+.navin{max-width:430px;width:100%;display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.navitem{font-size:11px;color:var(--muted);cursor:pointer}.navitem b{display:block;font-size:21px;color:#111;margin-bottom:2px}
+dialog{border:0;border-radius:22px;padding:0;width:min(92%,400px);box-shadow:0 20px 70px #0003}
+dialog::backdrop{background:#0007}.modal{padding:20px}
+.historyDialog{width:min(430px,100%);height:100vh;max-height:100vh;margin:0;border-radius:0;background:var(--bg);box-shadow:none}
+.historyDialog::backdrop{background:var(--bg)}
+.historyPage{height:100%;padding:18px 16px 95px;overflow:auto}
+.historyHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.historyHead h2{margin:0;font-size:28px;letter-spacing:-.4px}
+.historyClose{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 14px;font-weight:800;color:#26345a;box-shadow:0 4px 10px #26345a10}
+.historySub{font-size:13px;color:var(--muted);margin:0 2px 14px}
+.historySummary{background:linear-gradient(135deg,#526dfe,#7856e8);color:#fff;border-radius:22px;padding:18px;margin-bottom:12px;box-shadow:0 12px 28px #536dfe35}
+.historySummary .label{font-size:12px;opacity:.78}.historySummary .value{font-size:30px;font-weight:850;margin-top:4px}
+.historySummary .small{font-size:12px;opacity:.82;margin-top:3px}
+.historyTableWrap{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 5px 18px #536dfe0d}
+.historyTable{width:100%;table-layout:fixed;border-collapse:collapse;font-size:11px}
+.historyTable th{background:#eef0f4;color:#26345a;font-size:11px;font-weight:850;text-align:right;padding:11px 5px;border-bottom:1px solid var(--line);line-height:1.15}
+.historyTable th:first-child{text-align:left;width:20%}.historyTable th:nth-child(2){width:24%}.historyTable th:nth-child(3){width:27%}.historyTable th:nth-child(4){width:29%}
+.historyTable td{padding:10px 5px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.historyTable td:first-child{text-align:left;font-weight:700}.historyTable tbody tr:last-child td{border-bottom:0}
+.dayPositive{background:#c8eadc;color:#182033;font-weight:800}.dayNegative{background:#f4c5c5;color:#b4232d;font-weight:800}
+.cumPositive{color:#182033;font-weight:750}.cumNegative{color:#b4232d;font-weight:800}
+.historyLegend{display:flex;gap:14px;flex-wrap:wrap;margin:10px 2px 0;color:var(--muted);font-size:11px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.dot.green{background:#20b26b}.dot.red{background:#ef5b67}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
+.tab{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:12px;padding:10px 5px;font-weight:800;font-size:11px}
+.tab.active{background:#26345a;color:#fff;border-color:#26345a}
+.archiveCard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:10px}
+.archiveTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.statusGood{color:#15803d;font-weight:850}.statusBad{color:#b4232d;font-weight:850}
+.archiveGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.mini{background:#f5f7fb;border-radius:12px;padding:9px}.mini .k{font-size:10px;color:var(--muted)}.mini .v{font-size:14px;font-weight:800;margin-top:2px}
+.modal h2{margin:0 0 15px}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.field input,.field select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;font-size:16px;background:#fff}
+.modalBtns{display:flex;gap:9px;margin-top:18px}.modalBtns button{flex:1}
+.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:#26345a;color:#fff;padding:11px 16px;border-radius:13px;font-size:13px;display:none;z-index:9;box-shadow:0 8px 25px #0003}
+.section span{cursor:pointer}.recActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.recActions .btn{min-height:34px}
+</style>
+</head>
 
-on:
-  workflow_dispatch:
+<body>
+<div class="app">
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+<header>
+  <div class="logo">Budget</div>
+  <div class="month" id="month"></div>
+</header>
 
-    steps:
-      - name: Télécharger le dépôt
-        uses: actions/checkout@v4
+<section class="hero">
+  <div class="label">Reste à vivre jusqu'au prochain salaire</div>
+  <div class="balance" id="available">— CHF</div>
+  <div class="heroRow">
+    <span id="nextSalary">Prochain salaire : —</span>
+    <span id="days">— jours</span>
+  </div>
+</section>
 
-      - name: Installer Java 21
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
+<div class="card" style="border-left:5px solid var(--green)">
+  <div class="row">
+    <div>
+      <div class="title">Aujourd'hui</div>
+      <div class="muted">Budget disponible aujourd'hui</div>
+    </div>
+    <div class="big" id="daily">—</div>
+  </div>
 
-      - name: Installer Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
+  <div class="row" style="margin-top:12px">
+    <span class="muted">Dépensé aujourd'hui</span>
+    <strong id="todaySpent">0 CHF</strong>
+  </div>
+</div>
 
-      - name: Décompresser SOLDEO
-        run: unzip -q soldeo-android-v1.zip -d .
+<div class="card">
+  <div class="row">
+    <div>
+      <div class="title">Budget utilisé</div>
+      <div class="muted" id="spentText">Aucune dépense</div>
+    </div>
+    <div class="big" id="pct">0%</div>
+  </div>
+  <div class="progress">
+    <div class="bar" id="bar"></div>
+  </div>
+</div>
 
-      - name: Installer Capacitor
-        working-directory: soldeo-android
-        run: npm install
+<div class="actions">
+  <button class="btn primary" data-open="expense">＋ Dépense</button>
+  <button class="btn secondary" data-open="income">＋ Salaire / revenu</button>
+  <button class="btn secondary" data-open="settings">⚙ Réglages</button>
+</div>
 
-      - name: Ajouter Android
-        working-directory: soldeo-android
-        run: npx cap add android
+<div class="section">Ce mois</div>
 
-      - name: Créer l'icône SOLDEO
-        working-directory: soldeo-android
-        run: |
-          mkdir -p android/app/src/main/res/drawable
+<div class="card">
+  <div class="row">
+    <span style="color:#4b7bec;font-weight:700">● Revenus</span>
+    <span style="display:flex;align-items:center;gap:8px">
+      <strong id="incomeTotal">— CHF</strong>
+      <button type="button" id="editSalaryBtn" class="btn secondary" style="padding:6px 9px;font-size:11px;display:none">✏️ Modifier</button>
+    </span>
+  </div>
 
-          cat > android/app/src/main/res/drawable/soldeo_icon.xml <<'XML'
-          <vector xmlns:android="http://schemas.android.com/apk/res/android"
-              android:width="108dp"
-              android:height="108dp"
-              android:viewportWidth="512"
-              android:viewportHeight="512">
+  <div class="row" style="margin-top:10px">
+    <span style="color:#ef5b67;font-weight:700">● Dépenses</span>
+    <strong id="expenseTotal">— CHF</strong>
+  </div>
 
-              <path
-                  android:fillColor="#06264B"
-                  android:pathData="M0,0 L512,0 L512,512 L0,512 Z"/>
+  <div class="row" style="margin-top:10px">
+    <span class="muted">Charges fixes enregistrées</span>
+    <strong id="recurringTotal">— CHF</strong>
+  </div>
 
-              <path
-                  android:fillColor="#123D70"
-                  android:pathData="M40,330 L120,245 L175,280 L245,170 L310,238 L360,190 L475,330 Z"/>
+  <div class="row" style="margin-top:10px">
+    <span class="muted">Cumul budget</span>
+    <strong id="monthCumul">—</strong>
+  </div>
+</div>
 
-              <path
-                  android:fillColor="#FFFFFF"
-                  android:pathData="M45,315 L115,246 L168,279 L244,170 L305,237 L355,190 L468,315 L460,323 L355,205 L305,250 L244,185 L168,293 L115,260 L55,323 Z"/>
+<div class="section">
+  Activité récente <span id="allActivity" style="cursor:pointer">Voir tout</span>
+</div>
 
-              <path
-                  android:fillColor="#00A98F"
-                  android:pathData="M105,325 L155,325 L155,405 L105,405 Z"/>
+<div class="card" id="list">
+  <div class="empty">
+    Aucune opération pour le moment.<br>
+    Commence par ajouter ton salaire.
+  </div>
+</div>
 
-              <path
-                  android:fillColor="#35CFA7"
-                  android:pathData="M170,292 L220,292 L220,405 L170,405 Z"/>
+</div>
 
-              <path
-                  android:fillColor="#55E8B1"
-                  android:pathData="M235,250 L285,250 L285,405 L235,405 Z"/>
+<nav>
+  <div class="navin">
+    <div class="navitem" data-nav="home"><b>⌂</b>Accueil</div>
+    <div class="navitem" data-nav="history"><b>↕</b>Historique</div>
+    <div class="navitem" data-nav="expense"><b>＋</b>Dépense</div>
+    <div class="navitem" data-nav="settings"><b>⚙</b>Réglages</div>
+  </div>
+</nav>
 
-              <path
-                  android:fillColor="#75F0B4"
-                  android:pathData="M300,205 L350,205 L350,405 L300,405 Z"/>
+<dialog id="dlg">
+  <div class="modal" id="modalContent"></div>
+</dialog>
 
-              <path
-                  android:fillColor="#FF9C3A"
-                  android:pathData="M360,120 A38,38 0,1 0,436,120 A38,38 0,1 0,360,120"/>
+<div class="toast" id="toast"></div>
 
-          </vector>
-          XML
+<script>
+const KEY='budgetPrototypeV3';
 
-          sed -i 's#@mipmap/ic_launcher_round#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
-          sed -i 's#@mipmap/ic_launcher#@drawable/soldeo_icon#g' android/app/src/main/AndroidManifest.xml
+const saved=JSON.parse(localStorage.getItem(KEY)||'null');
 
-      - name: Synchroniser SOLDEO
-        working-directory: soldeo-android
-        run: npx cap sync android
+let state=saved||{
+  income:[],
+  bills:[],
+  expenses:[],
+  recurring:[],
+  nextSalary:'',
+  cycles:[],
+  currentCycleId:null
+};
 
-      - name: Construire l'APK
-        working-directory: soldeo-android/android
-        run: ./gradlew assembleDebug
+state.income=Array.isArray(state.income)?state.income:[];
+state.expenses=Array.isArray(state.expenses)?state.expenses:[];
+state.bills=Array.isArray(state.bills)?state.bills:[];
+state.recurring=Array.isArray(state.recurring)?state.recurring:[];
+state.cycles=Array.isArray(state.cycles)?state.cycles:[];
 
-      - name: Publier l'APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: SOLDEO-APK
-          path: soldeo-android/android/app/build/outputs/apk/debug/app-debug.apk
+function pad(n){
+  return String(n).padStart(2,'0')
+}
+
+function isoToday(){
+  const d=new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())
+}
+
+function isoDate(d){
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())
+}
+
+function parseISO(s){
+  const p=String(s||'').split('-').map(Number);
+  return p.length===3&&p.every(Number.isFinite)
+    ?new Date(p[0],p[1]-1,p[2])
+    :new Date()
+}
+
+function dateFR(s){
+  return parseISO(s).toLocaleDateString('fr-CH')
+}
+
+function monthLabel(s){
+  return parseISO(s).toLocaleDateString('fr-CH',{
+    month:'long',
+    year:'numeric'
+  })
+}
+
+function weekStart(s){
+  const d=parseISO(s);
+  const day=d.getDay()||7;
+  d.setDate(d.getDate()-day+1);
+  return isoDate(d)
+}
+
+function addDays(s,n){
+  const d=parseISO(s);
+  d.setDate(d.getDate()+n);
+  return isoDate(d)
+}
+
+function daysBetween(a,b){
+  return Math.round((parseISO(b)-parseISO(a))/86400000)
+}
+
+function money(n){
+  return Number(n||0).toLocaleString('fr-CH',{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  })+' CHF'
+}
+
+function num(v){
+  return parseFloat(String(v).replace(',','.'))||0
+}
+
+function todayFR(){
+  return dateFR(isoToday())
+}
+
+function persist(){
+  localStorage.setItem(KEY,JSON.stringify(state))
+}
+
+/* Conversion des anciennes opérations vers une vraie date ISO */
+function migrateIsoDates(){
+  [...state.income,...state.expenses].forEach(x=>{
+    if(!x.isoDate&&x.date){
+      const m=String(x.date).match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+      if(m){
+        x.isoDate=m[3]+'-'+pad(m[2])+'-'+pad(m[1])
+      }
+    }
+  });
+
+  persist()
+}
+
+migrateIsoDates();
+
+function ensureCycle(){
+
+  if(
+    state.currentCycleId &&
+    state.cycles.some(c=>c.id===state.currentCycleId)
+  ) return;
+
+  const id=Date.now().toString();
+
+  state.cycles.push({
+    id,
+    start:isoToday(),
+    end:'',
+    nextSalary:state.nextSalary||'',
+    label:monthLabel(isoToday())
+  });
+
+  state.currentCycleId=id;
+
+  state.income.forEach(x=>{
+    if(!x.cycleId)x.cycleId=id
+  });
+
+  state.bills.forEach(x=>{
+    if(!x.cycleId)x.cycleId=id
+  });
+
+  state.expenses.forEach(x=>{
+    if(!x.cycleId)x.cycleId=id
+  });
+
+  persist()
+}
+
+ensureCycle();
+
+const dlg=document.getElementById('dlg');
+const modal=document.getElementById('modalContent');
+
+function currentCycle(){
+  return state.cycles.find(c=>c.id===state.currentCycleId)||null
+}
+
+function cycleItems(arr,id=state.currentCycleId){
+  return arr.filter(x=>x.cycleId===id)
+}
+
+function startNewCycle(nextSalary){
+
+  const old=currentCycle();
+
+  if(old&&!old.end){
+    old.end=isoToday()
+  }
+
+  const id=Date.now().toString();
+
+  state.cycles.push({
+    id,
+    start:isoToday(),
+    end:'',
+    nextSalary:nextSalary||'',
+    label:monthLabel(isoToday())
+  });
+
+  state.currentCycleId=id;
+  state.nextSalary=nextSalary||'';
+
+  persist()
+}
+
+function cycleIncome(c){
+  return state.income
+    .filter(x=>x.cycleId===c.id)
+    .reduce((a,x)=>a+x.amount,0)
+}
+
+function cycleExpenses(c){
+  return state.expenses
+    .filter(x=>x.cycleId===c.id)
+    .reduce((a,x)=>a+x.amount,0)
+}
+
+function cycleFixed(c){
+  return state.recurring.reduce((a,x)=>a+x.amount,0)
+}
+
+function expensesOnDate(c,date){
+  return state.expenses
+    .filter(x=>x.cycleId===c.id&&x.isoDate===date)
+    .reduce((a,x)=>a+x.amount,0)
+}
+
+/*
+  NOUVELLE LOGIQUE DU BUDGET JOURNALIER
+
+  On prend l'argent réellement disponible avant aujourd'hui,
+  puis on le répartit sur les jours restants.
+
+  Exemple :
+  2'000 CHF disponibles / 20 jours = 100 CHF aujourd'hui.
+
+  Si 30 CHF sont dépensés :
+  100 - 30 = 70 CHF réellement disponibles aujourd'hui.
+
+  Demain, le calcul repart automatiquement avec le solde restant.
+*/
+function budgetForDay(c,date){
+
+  const end=c.nextSalary||c.end;
+
+  if(!end)return 0;
+
+  if(daysBetween(date,c.start)<0)return 0;
+
+  if(daysBetween(end,date)<=0)return 0;
+
+  const income=cycleIncome(c);
+  const fixed=cycleFixed(c);
+
+  let spentBefore=0;
+
+  state.expenses.forEach(x=>{
+    if(
+      x.cycleId===c.id &&
+      x.isoDate &&
+      x.isoDate<date
+    ){
+      spentBefore+=x.amount
+    }
+  });
+
+  const availableBefore=income-fixed-spentBefore;
+
+  const daysLeft=Math.max(
+    1,
+    daysBetween(date,end)
+  );
+
+  return Math.max(
+    0,
+    availableBefore/daysLeft
+  )
+}
+
+function dailyInfo(c,date){
+
+  const budget=budgetForDay(c,date);
+  const spent=expensesOnDate(c,date);
+  const diff=budget-spent;
+
+  return {
+    budget,
+    spent,
+    diff,
+    ok:diff>=-0.005
+  }
+}
+
+function allDatesForCycle(c,endDate=isoToday()){
+
+  const last=
+    c.nextSalary&&daysBetween(endDate,c.nextSalary)>0
+      ?addDays(c.nextSalary,-1)
+      :endDate;
+
+  const arr=[];
+  let d=c.start;
+  let guard=0;
+
+  while(d<=last&&guard<370){
+    arr.push(d);
+    d=addDays(d,1);
+    guard++
+  }
+
+  return arr
+}
+
+function openModal(type){
+
+  let title='';
+  let body='';
+
+  if(type==='income'){
+
+    title='Ajouter un salaire / revenu';
+
+    body=`
+      <div class="field">
+        <label>Type</label>
+        <select id="incomeType">
+          <option value="salary">Salaire — nouveau cycle</option>
+          <option value="other">Autre revenu — même cycle</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Montant (CHF)</label>
+        <input id="amount" inputmode="decimal" placeholder="Montant reçu">
+      </div>
+
+      <div class="field">
+        <label>Description</label>
+        <input id="desc" placeholder="Salaire, prime, autre…">
+      </div>
+
+      <div class="field">
+        <label>Prochain salaire</label>
+        <input id="incomeNextSalary" type="date" value="${state.nextSalary||''}">
+      </div>
+    `;
+
+  }else if(type==='expense'){
+
+    title='Ajouter une dépense';
+
+    body=`
+      <div class="field">
+        <label>Montant (CHF)</label>
+        <input id="amount" inputmode="decimal" placeholder="Montant dépensé">
+      </div>
+
+      <div class="field">
+        <label>Catégorie</label>
+        <select id="desc">
+          <option value="">Choisir</option>
+          <option>Alimentation</option>
+          <option>Transport</option>
+          <option>Loisirs</option>
+          <option>Shopping</option>
+          <option>Restaurant</option>
+          <option>Autre</option>
+        </select>
+      </div>
+    `;
+
+  }else{
+
+    title='Réglages';
+
+    body=`
+      <div class="title" style="font-size:17px;margin-bottom:5px">
+        Charges fixes mensuelles
+      </div>
+
+      <div class="muted">
+        Tu peux modifier ou supprimer chaque charge à tout moment.
+      </div>
+
+      <div style="margin-top:12px">
+        ${
+          state.recurring.length
+          ?
+          state.recurring.map((x,i)=>`
+            <div class="item">
+              <div style="min-width:0">
+                <div class="title">${x.desc}</div>
+                <div class="muted">
+                  Chaque mois${x.day?' · le '+x.day:''}
+                </div>
+
+                <div style="margin-top:6px">
+                  <div class="recActions">
+                    <button
+                      type="button"
+                      class="btn secondary"
+                      style="padding:8px 11px;font-size:12px;font-weight:800"
+                      onclick="editRecurring(${i})">
+                      ✏️ Modifier
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn secondary"
+                      style="padding:8px 11px;font-size:12px;font-weight:800;color:#ef5b67"
+                      onclick="deleteRecurring(${i})">
+                      🗑️ Supprimer
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="amount">
+                ${money(x.amount)}
+              </div>
+            </div>
+          `).join('')
+          :
+          '<div class="empty">Aucune charge fixe enregistrée.</div>'
+        }
+      </div>
+
+      <div class="field">
+        <label>Nouvelle charge fixe</label>
+        <input id="recDesc" placeholder="Loyer, 3ème pilier, téléphone…">
+      </div>
+
+      <div class="field">
+        <label>Montant mensuel (CHF)</label>
+        <input id="recAmount" inputmode="decimal" placeholder="Montant">
+      </div>
+
+      <div class="field">
+        <label>Jour habituel</label>
+        <input id="recDay" type="number" min="1" max="31" placeholder="Ex. 25">
+      </div>
+
+      <button
+        class="btn secondary"
+        style="width:100%"
+        id="addRecurring">
+        ＋ Ajouter la charge fixe
+      </button>
+
+      <div class="field">
+        <label>Prochain salaire</label>
+        <input id="salaryDate" type="date" value="${state.nextSalary||''}">
+      </div>
+    `;
+  }
+
+  modal.innerHTML=`
+    <h2>${title}</h2>
+    ${body}
+
+    <div class="modalBtns">
+      <button class="btn secondary" id="cancel">Annuler</button>
+      <button class="btn primary" id="save">Enregistrer</button>
+    </div>
+  `;
+
+  dlg.className='';
+  dlg.showModal();
+
+  document.getElementById('cancel').onclick=()=>dlg.close();
+  document.getElementById('save').onclick=()=>save(type);
+
+  const add=document.getElementById('addRecurring');
+
+  if(add){
+    add.onclick=()=>addRecurring()
+  }
+}
+
+function addRecurring(){
+
+  const desc=document.getElementById('recDesc').value.trim();
+  const amount=num(document.getElementById('recAmount').value);
+  const day=parseInt(document.getElementById('recDay').value)||null;
+
+  if(!desc||!amount){
+    toast('Indique un nom et un montant');
+    return
+  }
+
+  state.recurring.push({
+    desc,
+    amount,
+    day
+  });
+
+  persist();
+  dlg.close();
+  render();
+  toast('Charge fixe enregistrée ✓')
+}
+
+function editOperation(kind,index){
+
+  const arr=kind==='income'
+    ?state.income
+    :state.expenses;
+
+  const x=arr[index];
+
+  const typeLabel=
+    kind==='income'
+      ?'revenu'
+      :'dépense';
+
+  modal.innerHTML=`
+    <h2>Modifier ${typeLabel}</h2>
+
+    <div class="field">
+      <label>Montant (CHF)</label>
+      <input id="editAmount" inputmode="decimal" value="${x.amount}">
+    </div>
+
+    <div class="field">
+      <label>Description</label>
+      <input id="editDesc" value="${String(x.desc).replace(/"/g,'&quot;')}">
+    </div>
+
+    <div class="modalBtns">
+      <button class="btn secondary" id="cancelEdit">Annuler</button>
+      <button class="btn primary" id="saveEdit">Enregistrer</button>
+    </div>
+  `;
+
+  dlg.className='';
+  dlg.showModal();
+
+  document.getElementById('cancelEdit').onclick=()=>dlg.close();
+
+  document.getElementById('saveEdit').onclick=()=>{
+
+    const amount=num(
+      document.getElementById('editAmount').value
+    );
+
+    const desc=
+      document.getElementById('editDesc').value.trim()
+      ||typeLabel;
+
+    if(!amount){
+      toast('Indique un montant');
+      return
+    }
+
+    arr[index]={
+      ...x,
+      amount,
+      desc
+    };
+
+    persist();
+    dlg.close();
+    render();
+    toast('Modification enregistrée ✓')
+  }
+}
+
+function deleteOperation(kind,index){
+
+  const arr=
+    kind==='income'
+      ?state.income
+      :state.expenses;
+
+  if(!confirm('Supprimer cette opération ?'))return;
+
+  arr.splice(index,1);
+
+  persist();
+  render();
+  toast('Opération supprimée')
+}
+
+function editRecurring(index){
+
+  const x=state.recurring[index];
+
+  modal.innerHTML=`
+    <h2>Modifier la charge fixe</h2>
+
+    <div class="field">
+      <label>Nom</label>
+      <input id="editRecDesc" value="${String(x.desc).replace(/"/g,'&quot;')}">
+    </div>
+
+    <div class="field">
+      <label>Montant mensuel (CHF)</label>
+      <input id="editRecAmount" inputmode="decimal" value="${x.amount}">
+    </div>
+
+    <div class="field">
+      <label>Jour habituel</label>
+      <input id="editRecDay" type="number" min="1" max="31" value="${x.day||''}">
+    </div>
+
+    <div class="modalBtns">
+      <button class="btn secondary" id="cancelRec">Annuler</button>
+      <button class="btn primary" id="saveRec">Enregistrer</button>
+    </div>
+  `;
+
+  dlg.className='';
+  dlg.showModal();
+
+  document.getElementById('cancelRec').onclick=()=>dlg.close();
+
+  document.getElementById('saveRec').onclick=()=>{
+
+    const desc=
+      document.getElementById('editRecDesc').value.trim();
+
+    const amount=
+      num(document.getElementById('editRecAmount').value);
+
+    const day=
+      parseInt(document.getElementById('editRecDay').value)||null;
+
+    if(!desc||!amount){
+      toast('Indique un nom et un montant');
+      return
+    }
+
+    state.recurring[index]={
+      ...x,
+      desc,
+      amount,
+      day
+    };
+
+    persist();
+    dlg.close();
+    render();
+    toast('Charge fixe modifiée ✓')
+  }
+}
+
+function deleteRecurring(index){
+
+  if(!confirm('Supprimer cette charge fixe ?'))return;
+
+  state.recurring.splice(index,1);
+
+  persist();
+  render();
+  openModal('settings');
+
+  toast('Charge fixe supprimée')
+}
+
+function save(type){
+
+  if(type==='settings'){
+
+    const d=document.getElementById('salaryDate').value;
+
+    state.nextSalary=d;
+
+    const c=currentCycle();
+
+    if(c)c.nextSalary=d;
+
+    persist();
+    dlg.close();
+    render();
+
+    return
+  }
+
+  const amount=num(
+    document.getElementById('amount').value
+  );
+
+  if(!amount){
+    toast('Indique un montant');
+    return
+  }
+
+  const desc=
+    document.getElementById('desc').value
+    ||'Revenu';
+
+  if(type==='income'){
+
+    const mode=
+      document.getElementById('incomeType').value;
+
+    const next=
+      document.getElementById('incomeNextSalary').value;
+
+    if(mode==='salary'){
+
+      startNewCycle(next);
+
+    }else{
+
+      state.nextSalary=
+        next||state.nextSalary;
+
+      const c=currentCycle();
+
+      if(c)c.nextSalary=state.nextSalary
+    }
+
+    state.income.push({
+      amount,
+      desc,
+      date:todayFR(),
+      isoDate:isoToday(),
+      cycleId:state.currentCycleId
+    })
+
+  }else{
+
+    state.expenses.push({
+      amount,
+      desc,
+      date:todayFR(),
+      isoDate:isoToday(),
+      cycleId:state.currentCycleId
+    });
+  }
+
+  persist();
+  dlg.close();
+  render();
+  toast('Enregistré ✓')
+}
+
+function render(){
+
+  ensureCycle();
+
+  const c=currentCycle();
+
+  const incArr=cycleItems(state.income);
+  const expArr=cycleItems(state.expenses);
+
+  const inc=incArr.reduce((a,x)=>a+x.amount,0);
+  const exp=expArr.reduce((a,x)=>a+x.amount,0);
+  const rec=state.recurring.reduce((a,x)=>a+x.amount,0);
+
+  const available=inc-rec-exp;
+
+  document.getElementById('available').textContent=
+    (inc||exp)
+      ?money(available)
+      :'— CHF';
+
+  let days=0;
+
+  if(c&&c.nextSalary){
+    days=Math.max(
+      0,
+      daysBetween(isoToday(),c.nextSalary)
+    )
+  }
+
+  document.getElementById('days').textContent=
+    days+' jour'+(days>1?'s':'');
+
+  document.getElementById('nextSalary').textContent=
+    c&&c.nextSalary
+      ?'Prochain salaire : '+dateFR(c.nextSalary)
+      :'Prochain salaire : —';
+
+  const info=c
+    ?dailyInfo(c,isoToday())
+    :{
+      budget:0,
+      spent:0,
+      diff:0,
+      ok:true
+    };
+
+  /*
+    C'EST ICI QUE LE BUDGET DU JOUR DESCEND.
+
+    dailyInfo() donne :
+    budget disponible au début de la journée
+    moins
+    les dépenses faites aujourd'hui.
+  */
+
+  document.getElementById('daily').textContent=
+    c&&c.nextSalary
+      ?money(info.diff)
+      :'—';
+
+  document.getElementById('todaySpent').textContent=
+    money(info.spent);
+
+  document.getElementById('daily').style.color=
+    info.ok
+      ?'var(--green)'
+      :'var(--red)';
+
+  const base=Math.max(inc-rec,0);
+
+  const pct=
+    base
+      ?Math.min(100,Math.round(exp/base*100))
+      :0;
+
+  document.getElementById('pct').textContent=
+    pct+'%';
+
+  document.getElementById('bar').style.width=
+    pct+'%';
+
+  document.getElementById('spentText').textContent=
+    exp
+      ?money(exp)+' dépensés'
+      :'Aucune dépense';
+
+  document.getElementById('incomeTotal').textContent=
+    inc
+      ?money(inc)
+      :'— CHF';
+
+  document.getElementById('recurringTotal').textContent=
+    rec
+      ?money(rec)
+      :'— CHF';
+
+  document.getElementById('expenseTotal').textContent=
+    exp
+      ?money(exp)
+      :'— CHF';
+
+  const cycleBudget=inc-rec;
+  const cumul=cycleBudget-exp;
+
+  const mc=document.getElementById('monthCumul');
+
+  mc.textContent=
+    (cumul>=0?'+ ':'− ')
+    +money(Math.abs(cumul));
+
+  mc.className=
+    cumul>=0
+      ?'statusGood'
+      :'statusBad';
+
+  const salaryBtn=
+    document.getElementById('editSalaryBtn');
+
+  if(salaryBtn){
+
+    const idx=
+      state.income
+      .map((x,i)=>({x,i}))
+      .filter(o=>o.x.cycleId===state.currentCycleId)
+      .map(o=>o.i)
+      .pop();
+
+    salaryBtn.style.display=
+      idx===undefined
+        ?'none'
+        :'inline-flex';
+
+    if(idx!==undefined){
+      salaryBtn.onclick=
+        ()=>editOperation('income',idx)
+    }
+  }
+
+  const ops=[
+    ...incArr.map(x=>({
+      ...x,
+      type:'Revenu',
+      sign:'+',
+      kind:'income',
+      index:state.income.indexOf(x)
+    })),
+
+    ...expArr.map(x=>({
+      ...x,
+      type:'Dépense',
+      sign:'−',
+      kind:'expense',
+      index:state.expenses.indexOf(x)
+    }))
+  ]
+  .sort((a,b)=>
+    (a.isoDate||'').localeCompare(b.isoDate||'')
+  )
+  .reverse()
+  .slice(0,8);
+
+  document.getElementById('list').innerHTML=
+    ops.length
+      ?
+      ops.map(x=>`
+        <div class="item">
+
+          <div style="min-width:0">
+
+            <div class="title">
+              ${x.desc}
+            </div>
+
+            <div class="muted">
+              ${x.type} · ${x.date}
+            </div>
+
+            <div style="margin-top:6px">
+
+              <button
+                type="button"
+                class="btn secondary"
+                style="padding:6px 9px;font-size:11px"
+                onclick="editOperation('${x.kind}',${x.index})">
+                Modifier
+              </button>
+
+              <button
+                type="button"
+                class="btn secondary"
+                style="padding:6px 9px;font-size:11px;color:#ef5b67"
+                onclick="deleteOperation('${x.kind}',${x.index})">
+                Supprimer
+              </button>
+
+            </div>
+
+          </div>
+
+          <div class="amount">
+            ${x.sign} ${money(x.amount)}
+          </div>
+
+        </div>
+      `).join('')
+      :
+      '<div class="empty">Aucune opération pour le moment.<br>Commence par ajouter ton salaire.</div>';
+
+  document.getElementById('month').textContent=
+    c?.label||monthLabel(isoToday())
+}
+
+function toast(t){
+
+  const e=document.getElementById('toast');
+
+  e.textContent=t;
+  e.style.display='block';
+
+  setTimeout(()=>{
+    e.style.display='none'
+  },1500)
+}
+
+function cycleDates(c){
+
+  const last=
+    c.nextSalary&&daysBetween(isoToday(),c.nextSalary)>0
+      ?addDays(c.nextSalary,-1)
+      :isoToday();
+
+  return allDatesForCycle(c,last)
+}
+
+function dayRows(c){
+
+  return cycleDates(c)
+    .map(d=>({
+      date:d,
+      ...dailyInfo(c,d)
+    }))
+    .filter(x=>x.date<=isoToday())
+}
+
+function cycleSummary(c){
+
+  const rows=dayRows(c);
+
+  const budget=
+    rows.reduce((a,x)=>a+x.budget,0);
+
+  const spent=
+    rows.reduce((a,x)=>a+x.spent,0);
+
+  return {
+    budget,
+    spent,
+    diff:budget-spent,
+    good:rows.filter(x=>x.ok).length,
+    bad:rows.filter(x=>!x.ok).length
+  }
+}
+
+function summaryCard(s,label){
+
+  return `
+    <div class="historySummary">
+
+      <div class="label">
+        ${label}
+      </div>
+
+      <div class="value">
+        ${s.diff>=0?'+ ':'− '}
+        ${money(Math.abs(s.diff))}
+      </div>
+
+      <div class="small">
+        Budget ${money(s.budget)}
+        · Dépensé ${money(s.spent)}
+        ·
+        ${s.diff>=0?'🟢 en avance':'🔴 en dépassement'}
+      </div>
+
+    </div>
+  `
+}
+
+function showHistory(tab='days'){
+
+  dlg.className='historyDialog';
+
+  const c=currentCycle();
+
+  const s=c
+    ?cycleSummary(c)
+    :{
+      budget:0,
+      spent:0,
+      diff:0,
+      good:0,
+      bad:0
+    };
+
+  modal.innerHTML=`
+    <div class="historyPage">
+
+      <div class="historyHead">
+        <h2>Historique</h2>
+        <button
+          class="historyClose"
+          onclick="dlg.close()">
+          Fermer
+        </button>
+      </div>
+
+      <div class="historySub">
+        Jours, semaines, mois et années.
+        Les données restent archivées automatiquement.
+      </div>
+
+      ${summaryCard(
+        s,
+        'Cumul du cycle actuel'
+      )}
+
+      <div class="tabs">
+
+        <button
+          class="tab ${tab==='days'?'active':''}"
+          onclick="showHistory('days')">
+          Jours
+        </button>
+
+        <button
+          class="tab ${tab==='weeks'?'active':''}"
+          onclick="showHistory('weeks')">
+          Semaines
+        </button>
+
+        <button
+          class="tab ${tab==='months'?'active':''}"
+          onclick="showHistory('months')">
+          Mois
+        </button>
+
+        <button
+          class="tab ${tab==='years'?'active':''}"
+          onclick="showHistory('years')">
+          Années
+        </button>
+
+      </div>
+
+      ${
+        tab==='days'
+          ?renderDays(c)
+          :tab==='weeks'
+            ?renderWeeks()
+            :tab==='months'
+              ?renderMonths()
+              :renderYears()
+      }
+
+      <div class="historyLegend">
+        <span>
+          <i class="dot green"></i>
+          Budget respecté
+        </span>
+
+        <span>
+          <i class="dot red"></i>
+          Budget dépassé
+        </span>
+      </div>
+
+    </div>
+  `;
+
+  dlg.showModal()
+}
+
+function renderDays(c){
+
+  if(!c)
+    return '<div class="empty">Aucun cycle.</div>';
+
+  const rows=dayRows(c).reverse();
+
+  return `
+    <div class="historyTableWrap">
+
+      <table class="historyTable">
+
+        <thead>
+          <tr>
+            <th>Jour</th>
+            <th>Budget</th>
+            <th>Dépensé</th>
+            <th>Écart</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${
+            rows.map(x=>`
+              <tr>
+
+                <td>
+                  ${dateFR(x.date)}
+                </td>
+
+                <td>
+                  ${money(x.budget)}
+                </td>
+
+                <td
+                  class="${x.ok?'dayPositive':'dayNegative'}">
+                  ${money(x.spent)}
+                </td>
+
+                <td
+                  class="${x.ok?'cumPositive':'cumNegative'}">
+                  ${x.diff>=0?'+ ':'− '}
+                  ${money(Math.abs(x.diff))}
+                </td>
+
+              </tr>
+            `).join('')
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `
+}
+
+function monthKey(s){
+
+  const d=parseISO(s);
+
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)
+}
+
+function allExpenseDates(){
+
+  return [
+    ...new Set(
+      state.expenses
+        .map(x=>x.isoDate)
+        .filter(Boolean)
+    )
+  ]
+}
+
+function aggregatePeriod(start,end){
+
+  let budget=0;
+  let spent=0;
+  let good=0;
+  let bad=0;
+
+  state.cycles.forEach(c=>{
+
+    const a=c.start;
+
+    const b=
+      c.nextSalary
+        ?addDays(c.nextSalary,-1)
+        :(c.end||isoToday());
+
+    if(a>end||b<start)return;
+
+    let d=a;
+
+    if(d<start)d=start;
+
+    while(d<=b&&d<=end){
+
+      if(d>=start){
+
+        const r=dailyInfo(c,d);
+
+        budget+=r.budget;
+        spent+=r.spent;
+
+        r.ok
+          ?good++
+          :bad++;
+      }
+
+      d=addDays(d,1)
+    }
+  });
+
+  return {
+    budget,
+    spent,
+    diff:budget-spent,
+    good,
+    bad
+  }
+}
+
+function renderWeeks(){
+
+  const keys={};
+  const dates=[];
+
+  state.cycles.forEach(c=>{
+    cycleDates(c).forEach(d=>{
+      if(d<=isoToday())
+        dates.push(d)
+    })
+  });
+
+  [
+    ...new Set(dates)
+  ].forEach(d=>{
+
+    const k=weekStart(d);
+
+    if(!keys[k]){
+      keys[k]={
+        start:k,
+        end:addDays(k,6)
+      }
+    }
+  });
+
+  const arr=
+    Object.values(keys)
+      .sort((a,b)=>
+        b.start.localeCompare(a.start)
+      );
+
+  if(!arr.length)
+    return '<div class="empty">Aucune semaine enregistrée.</div>';
+
+  return arr.map(w=>{
+
+    const e=
+      w.end<isoToday()
+        ?w.end
+        :isoToday();
+
+    const s=
+      aggregatePeriod(
+        w.start,
+        e
+      );
+
+    return `
+      <div class="archiveCard">
+
+        <div class="archiveTop">
+
+          <div>
+            <div class="title">
+              Semaine du ${dateFR(w.start)}
+            </div>
+
+            <div class="muted">
+              ${dateFR(w.start)} → ${dateFR(e)}
+            </div>
+          </div>
+
+          <div
+            class="${s.diff>=0?'statusGood':'statusBad'}">
+
+            ${s.diff>=0?'🟢':'🔴'}
+            ${s.diff>=0?'+':'−'}
+            ${money(Math.abs(s.diff))}
+
+          </div>
+
+        </div>
+
+        <div class="archiveGrid">
+
+          <div class="mini">
+            <div class="k">Budget</div>
+            <div class="v">${money(s.budget)}</div>
+          </div>
+
+          <div class="mini">
+            <div class="k">Dépensé</div>
+            <div class="v">${money(s.spent)}</div>
+          </div>
+
+          <div class="mini">
+            <div class="k">Jours</div>
+            <div class="v">
+              ${s.good} 🟢 / ${s.bad} 🔴
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `
+
+  }).join('')
+}
+
+function renderMonths(){
+
+  const keys=[
+    ...new Set([
+      ...state.cycles.map(c=>c.start),
+      ...allExpenseDates()
+    ].map(monthKey))
+  ]
+  .sort()
+  .reverse();
+
+  if(!keys.length)
+    return '<div class="empty">Aucun mois enregistré.</div>';
+
+  return keys.map(k=>{
+
+    const [y,m]=k.split('-').map(Number);
+
+    const start=
+      y+'-'+pad(m)+'-01';
+
+    const end=
+      new Date(y,m,0);
+
+    const e=
+      isoDate(end)<isoToday()
+        ?isoDate(end)
+        :isoToday();
+
+    const s=
+      aggregatePeriod(start,e);
+
+    return `
+      <div class="archiveCard">
+
+        <div class="archiveTop">
+
+          <div>
+
+            <div class="title">
+              ${parseISO(start).toLocaleDateString(
+                'fr-CH',
+                {
+                  month:'long',
+                  year:'numeric'
+                }
+              )}
+            </div>
+
+            <div class="muted">
+              ${s.good} jours respectés
+              ·
+              ${s.bad} jours dépassés
+            </div>
+
+          </div>
+
+          <div
+            class="${s.diff>=0?'statusGood':'statusBad'}">
+
+            ${s.diff>=0?'🟢':'🔴'}
+            ${s.diff>=0?'+':'−'}
+            ${money(Math.abs(s.diff))}
+
+          </div>
+
+        </div>
+
+        <div class="archiveGrid">
+
+          <div class="mini">
+            <div class="k">Budget</div>
+            <div class="v">${money(s.budget)}</div>
+          </div>
+
+          <div class="mini">
+            <div class="k">Dépensé</div>
+            <div class="v">${money(s.spent)}</div>
+          </div>
+
+          <div class="mini">
+            <div class="k">Utilisé</div>
+            <div class="v">
+              ${s.budget
+                ?Math.round(s.spent/s.budget*100)
+                :0}%
+            </div>
+          </div>
+
+        </div>
+
+        <button
+          class="btn secondary"
+          style="width:100%;margin-top:10px"
+          onclick="showMonthDetails('${k}')">
+          Voir le détail
+        </button>
+
+      </div>
+    `
+
+  }).join('')
+}
+
+function renderYears(){
+
+  const years=[
+    ...new Set([
+      ...state.cycles.map(c=>c.start),
+      ...allExpenseDates()
+    ].map(s=>parseISO(s).getFullYear()))
+  ]
+  .sort((a,b)=>b-a);
+
+  if(!years.length)
+    return '<div class="empty">Aucune année enregistrée.</div>';
+
+  return years.map(y=>{
+
+    const s=
+      aggregatePeriod(
+        y+'-01-01',
+        y===new Date().getFullYear()
+          ?isoToday()
+          :y+'-12-31'
+      );
+
+    return `
+      <div class="archiveCard">
+
+        <div class="archiveTop">
+
+          <div>
+
+            <div class="title">
+              ${y}
+            </div>
+
+            <div class="muted">
+              Résumé annuel
+            </div>
+
+          </div>
+
+          <div
+            class="${s.diff>=0?'statusGood':'statusBad'}">
+
+            ${s.diff>=0?'🟢':'🔴'}
+            ${s.diff>=0?'+':'−'}
+            ${money(Math.abs(s.diff))}
+
+          </div>
+
+        </div>
+
+        <div class="archiveGrid">
+
+          <div class="mini">
+            <div class="k">Budget</div>
+            <div class="v">${money(s.budget)}</div>
+          </div>
+
+          <div class="mini">
+            <div class="k">Dépensé</div>
+            <div class="v">${money(s.spent)}</div>
+          </div>
+
+          <div class="mini">
+            <div class="k">Jours</div>
+            <div class="v">
+              ${s.good} 🟢 / ${s.bad} 🔴
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `
+
+  }).join('')
+}
+
+function showMonthDetails(k){
+
+  const [y,m]=k.split('-').map(Number);
+
+  const start=
+    y+'-'+pad(m)+'-01';
+
+  const end=
+    isoDate(new Date(y,m,0));
+
+  const e=
+    end<isoToday()
+      ?end
+      :isoToday();
+
+  const rows=[];
+
+  state.cycles.forEach(c=>{
+
+    cycleDates(c).forEach(d=>{
+
+      if(d>=start&&d<=e){
+
+        rows.push({
+          date:d,
+          ...dailyInfo(c,d)
+        })
+      }
+    })
+  });
+
+  rows.sort((a,b)=>
+    b.date.localeCompare(a.date)
+  );
+
+  modal.innerHTML=`
+
+    <div class="historyPage">
+
+      <div class="historyHead">
+
+        <h2>
+          ${parseISO(start).toLocaleDateString(
+            'fr-CH',
+            {
+              month:'long',
+              year:'numeric'
+            }
+          )}
+        </h2>
+
+        <button
+          class="historyClose"
+          onclick="showHistory('months')">
+          Retour
+        </button>
+
+      </div>
+
+      <div class="historySub">
+        Détail jour par jour
+      </div>
+
+      <div class="historyTableWrap">
+
+        <table class="historyTable">
+
+          <thead>
+            <tr>
+              <th>Jour</th>
+              <th>Budget</th>
+              <th>Dépensé</th>
+              <th>Écart</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            ${
+              rows.map(x=>`
+
+                <tr>
+
+                  <td>
+                    ${dateFR(x.date)}
+                  </td>
+
+                  <td>
+                    ${money(x.budget)}
+                  </td>
+
+                  <td
+                    class="${x.ok?'dayPositive':'dayNegative'}">
+                    ${money(x.spent)}
+                  </td>
+
+                  <td
+                    class="${x.ok?'cumPositive':'cumNegative'}">
+
+                    ${x.diff>=0?'+ ':'− '}
+                    ${money(Math.abs(x.diff))}
+
+                  </td>
+
+                </tr>
+
+              `).join('')
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+  `;
+
+  dlg.className='historyDialog'
+}
+
+document
+  .querySelectorAll('[data-open]')
+  .forEach(b=>{
+    b.onclick=()=>openModal(b.dataset.open)
+  });
+
+document
+  .querySelectorAll('[data-nav]')
+  .forEach(b=>{
+
+    b.onclick=()=>{
+
+      if(b.dataset.nav==='home'){
+
+        scrollTo(0,0)
+
+      }else if(b.dataset.nav==='history'){
+
+        showHistory()
+
+      }else{
+
+        openModal(
+          b.dataset.nav==='expense'
+            ?'expense'
+            :'settings'
+        )
+      }
+    }
+  });
+
+document.getElementById('allActivity').onclick=
+  ()=>showHistory();
+
+dlg.addEventListener(
+  'close',
+  ()=>{
+    dlg.className=''
+  }
+);
+
+render();
+</script>
+</body>
+</html>
