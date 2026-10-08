@@ -43,7 +43,7 @@ jobs:
             exit 1
           fi
 
-      -       - name: Installer le vrai logo Catogne
+      - name: Installer le vrai logo Catogne
         working-directory: soldeo-android
         run: |
           mkdir -p android/app/src/main/res/drawable
