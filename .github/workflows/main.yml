@@ -22,64 +22,101 @@ jobs:
         with:
           node-version: 22
 
-      - name: Décompresser SOLDEA
-        run: unzip -q soldea-android-v1.zip -d .
-
-      
-      - name: Installer Capacitor
-        working-directory: soldea-android
+      - name: Préparer le projet SOLDEA
         run: |
-             npm install
-             npm install @capacitor/core@6.2.2 @capacitor/cli@6.2.2 @capacitor/android@6.2.2
-             
+          mkdir -p soldeo-android/www
+          cp index.html soldeo-android/www/index.html
+
+          cat > soldeo-android/package.json <<'EOF'
+          {
+            "name": "soldea-android",
+            "version": "1.0.0",
+            "private": true,
+            "scripts": {
+              "build": "echo SOLDEA"
+            },
+            "dependencies": {
+              "@capacitor/core": "6.2.2",
+              "@capacitor/android": "6.2.2"
+            },
+            "devDependencies": {
+              "@capacitor/cli": "6.2.2"
+            }
+          }
+          EOF
+
+          cat > soldeo-android/capacitor.config.json <<'EOF'
+          {
+            "appId": "ch.soldea.budget",
+            "appName": "SOLDEA",
+            "webDir": "www"
+          }
+          EOF
+
+      - name: Installer Capacitor
+        working-directory: soldeo-android
+        run: npm install
+
       - name: Ajouter Android
-        working-directory: soldea-android
+        working-directory: soldeo-android
         run: npx cap add android
 
-      - name: Mettre à jour l'application SOLDEA
+      - name: Définir le nom SOLDEA
+        working-directory: soldeo-android
         run: |
-          if [ -d "soldea-android/www" ]; then
-            cp index.html soldea-android/www/index.html
-          else
-            echo "Dossier www introuvable"
-            find soldea-android -maxdepth 2 -type d
-            exit 1
-          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
 
-      
-      - name: Synchroniser SOLDEA
-        working-directory: soldea-android
-        run: npx cap sync android
-      - name: Installer le vrai logo Catogne
-        working-directory: soldea-android
+          p = Path("android/app/src/main/res/values/strings.xml")
+          s = p.read_text()
+          s = re.sub(
+              r'<string name="app_name">.*?</string>',
+              '<string name="app_name">SOLDEA</string>',
+              s
+          )
+          p.write_text(s)
+
+          m = Path("android/app/src/main/AndroidManifest.xml")
+          s = m.read_text()
+          s = re.sub(
+              r'android:label="[^"]*"',
+              'android:label="@string/app_name"',
+              s
+          )
+          m.write_text(s)
+          PY
+
+      - name: Installer le logo SOLDEA
+        working-directory: soldeo-android
         run: |
-          sudo apt-get update && sudo apt-get install -y imagemagick
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          test -f ../soldea_icon.png
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
 
-          convert ../soldea_icon.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          convert ../soldea_icon.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          convert ../soldea_icon.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          convert ../soldea_icon.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          convert ../soldea_icon.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-
-          cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          for spec in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            density="${spec%%:*}"
+            size="${spec##*:}"
+            mkdir -p "android/app/src/main/res/mipmap-$density"
+            convert "../soldea_icon.png" -resize "${size}x${size}" \
+              "android/app/src/main/res/mipmap-$density/ic_launcher.png"
+            cp "android/app/src/main/res/mipmap-$density/ic_launcher.png" \
+              "android/app/src/main/res/mipmap-$density/ic_launcher_round.png"
+          done
 
           rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
           rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+
+      - name: Synchroniser SOLDEA
+        working-directory: soldeo-android
+        run: npx cap sync android
+
       - name: Construire l'APK
-        working-directory: soldea-android/android
+        working-directory: soldeo-android/android
         run: ./gradlew assembleDebug
 
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
           name: SOLDEA-APK
-          path: soldea-android/android/app/build/outputs/apk/debug/app-debug.apk
+          path: soldeo-android/android/app/build/outputs/apk/debug/app-debug.apk
