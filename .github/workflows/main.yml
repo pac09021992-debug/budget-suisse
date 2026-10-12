@@ -25,12 +25,13 @@ jobs:
       - name: Décompresser SOLDEO
         run: unzip -q soldea-android-v1.zip -d .
 
+      
       - name: Installer Capacitor
         working-directory: soldeo-android
         run: |
-              npm install
-              npm install @capacitor/core @capacitor/cli @capacitor/android
-
+             npm install
+             npm install @capacitor/core@6.2.2 @capacitor/cli@6.2.2 @capacitor/android@6.2.2
+             
       - name: Ajouter Android
         working-directory: soldeo-android
         run: npx cap add android
