@@ -23,7 +23,7 @@ jobs:
           node-version: 22
 
       - name: Décompresser SOLDEO
-        run: unzip -q soldeo-android-v1.zip -d .
+        run: unzip -q soldea-android-v1.zip -d .
 
       - name: Installer Capacitor
         working-directory: soldeo-android
