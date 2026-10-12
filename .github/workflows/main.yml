@@ -27,7 +27,9 @@ jobs:
 
       - name: Installer Capacitor
         working-directory: soldeo-android
-        run: npm install
+        run: |
+              npm install
+              npm install @capacitor/core @capacitor/cli @capacitor/android
 
       - name: Ajouter Android
         working-directory: soldeo-android
