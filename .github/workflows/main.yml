@@ -38,6 +38,8 @@ jobs:
             "dependencies": {
               "@capacitor/core": "6.2.2",
               "@capacitor/android": "6.2.2"
+              "@capacitor/filesystem": "6.2.2",
+              "@capacitor/share": "6.2.2"
             },
             "devDependencies": {
               "@capacitor/cli": "6.2.2"
